@@ -106,7 +106,7 @@
   </div>
 </section>
 
-<!-- FEATURED ARTICLES -->
+<!-- FEATURED ARTICLES — carregados do Supabase -->
 <section class="section articles-section">
   <div class="container">
     <div class="section-header">
@@ -114,113 +114,11 @@
       <h2 class="section-title">Pesquisas recentes</h2>
       <a href="publicacoes.html" class="section-link">Ver todas →</a>
     </div>
-
-    <div class="articles-grid">
-
-      <article class="article-card article-featured">
-        <div class="article-img" style="background: linear-gradient(135deg, #1a3a6e 0%, #0ea5e9 100%);">
-          <div class="article-img-overlay">
-            <span class="article-category">Meio Ambiente</span>
-          </div>
-        </div>
-        <div class="article-body">
-          <div class="article-meta">
-            <span class="article-date">28 mar 2025</span>
-            <span class="article-read">8 min de leitura</span>
-          </div>
-          <h3 class="article-title">Análise da qualidade da água em rios urbanos: um estudo comparativo em Bogotá</h3>
-          <p class="article-excerpt">Este trabalho investigou parâmetros físico-químicos da água em três rios que cortam zonas urbanas de Bogotá, revelando dados alarmantes sobre contaminação por metais pesados.</p>
-          <div class="article-footer">
-            <div class="article-author">
-              <div class="author-avatar" style="background:#f97316;">JC</div>
-              <div>
-                <div class="author-name">Juan Carlos Ríos</div>
-                <div class="author-school">Colegio Nacional, Colômbia</div>
-              </div>
-            </div>
-            <a href="artigo.html" class="article-cta">Ler →</a>
-          </div>
-        </div>
-      </article>
-
-      <article class="article-card">
-        <div class="article-img" style="background: linear-gradient(135deg, #1e3a5f 0%, #3b82f6 100%);">
-          <div class="article-img-overlay">
-            <span class="article-category">Física</span>
-          </div>
-        </div>
-        <div class="article-body">
-          <div class="article-meta">
-            <span class="article-date">22 mar 2025</span>
-            <span class="article-read">6 min</span>
-          </div>
-          <h3 class="article-title">Produção de energia solar em zonas andinas de alta altitude</h3>
-          <p class="article-excerpt">Medições comparativas da irradiância solar em diferentes altitudes nos Andes peruanos demonstram potencial único para energia fotovoltaica.</p>
-          <div class="article-footer">
-            <div class="article-author">
-              <div class="author-avatar" style="background:#0ea5e9;">LQ</div>
-              <div>
-                <div class="author-name">Lucía Quispe</div>
-                <div class="author-school">IE San Marcos, Peru</div>
-              </div>
-            </div>
-            <a href="artigo.html" class="article-cta">Ler →</a>
-          </div>
-        </div>
-      </article>
-
-      <article class="article-card">
-        <div class="article-img" style="background: linear-gradient(135deg, #7c2d12 0%, #f97316 100%);">
-          <div class="article-img-overlay">
-            <span class="article-category">Saúde</span>
-          </div>
-        </div>
-        <div class="article-body">
-          <div class="article-meta">
-            <span class="article-date">15 mar 2025</span>
-            <span class="article-read">5 min</span>
-          </div>
-          <h3 class="article-title">Impacto do uso de telas no sono de adolescentes: pesquisa de campo escolar</h3>
-          <p class="article-excerpt">Pesquisa realizada com 200 estudantes de ensino médio investigou a correlação entre tempo de tela e qualidade do sono em adolescentes.</p>
-          <div class="article-footer">
-            <div class="article-author">
-              <div class="author-avatar" style="background:#22c55e;">AM</div>
-              <div>
-                <div class="author-name">Ana Mello</div>
-                <div class="author-school">EEPSG, São Paulo</div>
-              </div>
-            </div>
-            <a href="artigo.html" class="article-cta">Ler →</a>
-          </div>
-        </div>
-      </article>
-
-      <article class="article-card">
-        <div class="article-img" style="background: linear-gradient(135deg, #134e4a 0%, #14b8a6 100%);">
-          <div class="article-img-overlay">
-            <span class="article-category">Tecnologia</span>
-          </div>
-        </div>
-        <div class="article-body">
-          <div class="article-meta">
-            <span class="article-date">10 mar 2025</span>
-            <span class="article-read">7 min</span>
-          </div>
-          <h3 class="article-title">Protótipo de sensor IoT de baixo custo para monitoramento de plantações familiares</h3>
-          <p class="article-excerpt">Desenvolvimento de um sistema de sensoriamento acessível para pequenos agricultores usando componentes de baixo custo e conectividade LoRa.</p>
-          <div class="article-footer">
-            <div class="article-author">
-              <div class="author-avatar" style="background:#8b5cf6;">MG</div>
-              <div>
-                <div class="author-name">Miguel González</div>
-                <div class="author-school">Liceo Técnico, Chile</div>
-              </div>
-            </div>
-            <a href="artigo.html" class="article-cta">Ler →</a>
-          </div>
-        </div>
-      </article>
-
+    <!-- id="articlesGrid" → preenchido pelo main.js -->
+    <div class="articles-grid" id="articlesGrid">
+      <div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--gray-400);">
+        <p style="font-size:15px;">⏳ Carregando publicações...</p>
+      </div>
     </div>
   </div>
 </section>
@@ -236,42 +134,34 @@
       <a href="publicacoes.html?cat=biologia" class="category-card">
         <div class="cat-icon">🧬</div>
         <div class="cat-name">Biologia</div>
-        <div class="cat-count">24 pesquisas</div>
       </a>
       <a href="publicacoes.html?cat=quimica" class="category-card">
         <div class="cat-icon">⚗️</div>
         <div class="cat-name">Química</div>
-        <div class="cat-count">18 pesquisas</div>
       </a>
       <a href="publicacoes.html?cat=fisica" class="category-card">
         <div class="cat-icon">⚛️</div>
         <div class="cat-name">Física</div>
-        <div class="cat-count">15 pesquisas</div>
       </a>
       <a href="publicacoes.html?cat=meio-ambiente" class="category-card">
         <div class="cat-icon">🌱</div>
         <div class="cat-name">Meio Ambiente</div>
-        <div class="cat-count">21 pesquisas</div>
       </a>
       <a href="publicacoes.html?cat=tecnologia" class="category-card">
         <div class="cat-icon">💡</div>
         <div class="cat-name">Tecnologia</div>
-        <div class="cat-count">19 pesquisas</div>
       </a>
       <a href="publicacoes.html?cat=saude" class="category-card">
         <div class="cat-icon">🩺</div>
         <div class="cat-name">Saúde</div>
-        <div class="cat-count">12 pesquisas</div>
       </a>
       <a href="publicacoes.html?cat=matematica" class="category-card">
         <div class="cat-icon">📐</div>
         <div class="cat-name">Matemática</div>
-        <div class="cat-count">9 pesquisas</div>
       </a>
       <a href="publicacoes.html?cat=ciencias-sociais" class="category-card">
         <div class="cat-icon">🌎</div>
         <div class="cat-name">Ciências Sociais</div>
-        <div class="cat-count">11 pesquisas</div>
       </a>
     </div>
   </div>
@@ -369,11 +259,11 @@
       <div class="footer-col">
         <h4 class="footer-col-title">Áreas</h4>
         <ul class="footer-links">
-          <li><a href="#">Biologia</a></li>
-          <li><a href="#">Química</a></li>
-          <li><a href="#">Física</a></li>
-          <li><a href="#">Meio Ambiente</a></li>
-          <li><a href="#">Tecnologia</a></li>
+          <li><a href="publicacoes.html?cat=biologia">Biologia</a></li>
+          <li><a href="publicacoes.html?cat=quimica">Química</a></li>
+          <li><a href="publicacoes.html?cat=fisica">Física</a></li>
+          <li><a href="publicacoes.html?cat=meio-ambiente">Meio Ambiente</a></li>
+          <li><a href="publicacoes.html?cat=tecnologia">Tecnologia</a></li>
         </ul>
       </div>
     </div>
@@ -384,6 +274,8 @@
   </div>
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="supabase.js"></script>
 <script src="main.js"></script>
 </body>
 </html>

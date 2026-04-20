@@ -51,12 +51,12 @@
       <select class="filter-select" id="categoryFilter">
         <option value="">Todas as áreas</option>
         <option value="biologia">Biologia</option>
-        <option value="quimica">Química</option>
-        <option value="fisica">Física</option>
+        <option value="química">Química</option>
+        <option value="física">Física</option>
         <option value="meio ambiente">Meio Ambiente</option>
         <option value="tecnologia">Tecnologia</option>
-        <option value="saude">Saúde</option>
-        <option value="matematica">Matemática</option>
+        <option value="saúde">Saúde</option>
+        <option value="matemática">Matemática</option>
         <option value="ciências sociais">Ciências Sociais</option>
       </select>
       <select class="filter-select" id="orderFilter">
@@ -69,8 +69,12 @@
 
 <section class="publist-section">
   <div class="container">
-    <!-- Os cards são inseridos dinamicamente pelo main.js -->
-    <div class="publist-grid" id="pubGrid"></div>
+    <!-- Preenchido dinamicamente pelo main.js -->
+    <div class="publist-grid" id="pubGrid">
+      <div style="grid-column:1/-1;text-align:center;padding:80px 20px;color:var(--gray-400);">
+        <p style="font-size:15px;">⏳ Carregando pesquisas...</p>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -120,9 +124,11 @@
       <div class="footer-col">
         <h4 class="footer-col-title">Áreas</h4>
         <ul class="footer-links">
-          <li><a href="#">Biologia</a></li><li><a href="#">Química</a></li>
-          <li><a href="#">Física</a></li><li><a href="#">Meio Ambiente</a></li>
-          <li><a href="#">Tecnologia</a></li>
+          <li><a href="publicacoes.html?cat=biologia">Biologia</a></li>
+          <li><a href="publicacoes.html?cat=química">Química</a></li>
+          <li><a href="publicacoes.html?cat=física">Física</a></li>
+          <li><a href="publicacoes.html?cat=meio-ambiente">Meio Ambiente</a></li>
+          <li><a href="publicacoes.html?cat=tecnologia">Tecnologia</a></li>
         </ul>
       </div>
     </div>
@@ -133,7 +139,6 @@
   </div>
 </footer>
 
-<!-- CDN Supabase — deve vir ANTES dos seus scripts -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="supabase.js"></script>
 <script src="main.js"></script>

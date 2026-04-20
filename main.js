@@ -1,5 +1,5 @@
 // ============================================================
-//  YLA — main.js  (versão com Supabase)
+//  YLA — main.js  (versão Supabase — completo e corrigido)
 // ============================================================
 
 // ─── Navbar scroll ───────────────────────────────────────────
@@ -43,8 +43,8 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 const observer = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
     if (entry.isIntersecting) {
-      entry.target.style.opacity    = '1';
-      entry.target.style.transform  = 'translateY(0)';
+      entry.target.style.opacity   = '1';
+      entry.target.style.transform = 'translateY(0)';
       observer.unobserve(entry.target);
     }
   });
@@ -53,8 +53,8 @@ const observer = new IntersectionObserver((entries) => {
 document.querySelectorAll(
   '.article-card, .category-card, .acao-card, .value-card, .publist-card, .acao-full-card, .faq-item'
 ).forEach(el => {
-  el.style.opacity   = '0';
-  el.style.transform = 'translateY(20px)';
+  el.style.opacity    = '0';
+  el.style.transform  = 'translateY(20px)';
   el.style.transition = 'opacity .5s ease, transform .5s ease, box-shadow .22s ease, border-color .22s ease';
   observer.observe(el);
 });
@@ -74,26 +74,28 @@ if (dirLinks.length) {
   dirSections.forEach(s => dirObserver.observe(s));
 }
 
-// ─── Cores por área ──────────────────────────────────────────
+// ─── Utilitários ─────────────────────────────────────────────
 const AREA_CORES = {
-  'Biologia':               { bg: 'linear-gradient(135deg, #14532d, #22c55e)', initials_color: '#f97316' },
-  'Química':                { bg: 'linear-gradient(135deg, #4a1d96, #7c3aed)', initials_color: '#ec4899' },
-  'Física':                 { bg: 'linear-gradient(135deg, #1e3a5f, #3b82f6)', initials_color: '#0ea5e9' },
-  'Meio Ambiente / Ecologia': { bg: 'linear-gradient(135deg, #1a3a6e, #0ea5e9)', initials_color: '#f97316' },
-  'Tecnologia / Computação':  { bg: 'linear-gradient(135deg, #134e4a, #14b8a6)', initials_color: '#8b5cf6' },
-  'Saúde / Medicina':       { bg: 'linear-gradient(135deg, #7c2d12, #f97316)', initials_color: '#22c55e' },
-  'Matemática':             { bg: 'linear-gradient(135deg, #1e3a5f, #6366f1)', initials_color: '#60a5fa' },
-  'Ciências Sociais':       { bg: 'linear-gradient(135deg, #831843, #ec4899)', initials_color: '#f97316' },
+  'Biologia':         { bg: 'linear-gradient(135deg, #14532d, #22c55e)', cor: '#f97316' },
+  'Química':          { bg: 'linear-gradient(135deg, #4a1d96, #7c3aed)', cor: '#ec4899' },
+  'Física':           { bg: 'linear-gradient(135deg, #1e3a5f, #3b82f6)', cor: '#0ea5e9' },
+  'Meio Ambiente':    { bg: 'linear-gradient(135deg, #1a3a6e, #0ea5e9)', cor: '#f97316' },
+  'Tecnologia':       { bg: 'linear-gradient(135deg, #134e4a, #14b8a6)', cor: '#8b5cf6' },
+  'Saúde':            { bg: 'linear-gradient(135deg, #7c2d12, #f97316)', cor: '#22c55e' },
+  'Matemática':       { bg: 'linear-gradient(135deg, #1e3a5f, #6366f1)', cor: '#60a5fa' },
+  'Ciências Sociais': { bg: 'linear-gradient(135deg, #831843, #ec4899)', cor: '#f97316' },
 };
 
 function getCores(area) {
+  if (!area) return { bg: 'linear-gradient(135deg, #1a3a6e, #3b82f6)', cor: '#f97316' };
   for (const [key, val] of Object.entries(AREA_CORES)) {
-    if (area && area.toLowerCase().includes(key.toLowerCase())) return val;
+    if (area.toLowerCase().includes(key.toLowerCase())) return val;
   }
-  return { bg: 'linear-gradient(135deg, #1a3a6e, #3b82f6)', initials_color: '#f97316' };
+  return { bg: 'linear-gradient(135deg, #1a3a6e, #3b82f6)', cor: '#f97316' };
 }
 
 function getInitials(nome) {
+  if (!nome) return '?';
   return nome.split(' ').slice(0, 2).map(p => p[0]).join('').toUpperCase();
 }
 
@@ -103,11 +105,61 @@ function formatarData(iso) {
 }
 
 function normalizarArea(area) {
-  // Converte para um valor compatível com o data-category dos cards
   return area ? area.split('/')[0].trim().toLowerCase() : '';
 }
 
-// ─── PUBLICAÇÕES — carrega do Supabase ───────────────────────
+// ─── HOME — carrega os 4 artigos mais recentes ────────────────
+const articlesGrid = document.getElementById('articlesGrid');
+if (articlesGrid && window.YLA) {
+  (async () => {
+    const artigos  = await window.YLA.listarPesquisas({ ordem: 'recentes' });
+    const recentes = artigos.slice(0, 4);
+
+    if (recentes.length === 0) {
+      articlesGrid.innerHTML = `
+        <div style="grid-column:1/-1;text-align:center;padding:60px 20px;">
+          <div style="font-size:48px;margin-bottom:16px;">🔬</div>
+          <h3 style="font-family:var(--font-display);font-size:20px;font-weight:700;color:var(--gray-700);margin-bottom:8px;">Nenhuma publicação ainda</h3>
+          <p style="color:var(--gray-400);font-size:15px;margin-bottom:24px;">As primeiras pesquisas aprovadas aparecerão aqui.</p>
+          <a href="enviar.html" class="btn-primary" style="display:inline-block;">Seja o primeiro a publicar →</a>
+        </div>`;
+      return;
+    }
+
+    articlesGrid.innerHTML = recentes.map((p, i) => {
+      const cores    = getCores(p.area);
+      const initials = getInitials(p.nome);
+      const featured = i === 0 ? 'article-featured' : '';
+      return `
+        <article class="article-card ${featured}" style="opacity:0;transform:translateY(20px);transition:opacity .5s ease,transform .5s ease">
+          <div class="article-img" style="background:${cores.bg};">
+            <div class="article-img-overlay"><span class="article-category">${p.area}</span></div>
+          </div>
+          <div class="article-body">
+            <div class="article-meta">
+              <span class="article-date">${formatarData(p.publicado_em)}</span>
+            </div>
+            <h3 class="article-title">${p.titulo}</h3>
+            <p class="article-excerpt">${p.resumo}</p>
+            <div class="article-footer">
+              <div class="article-author">
+                <div class="author-avatar" style="background:${cores.cor};">${initials}</div>
+                <div>
+                  <div class="author-name">${p.nome}</div>
+                  <div class="author-school">${p.escola}, ${p.pais}</div>
+                </div>
+              </div>
+              <a href="artigo.html?id=${p.id}" class="article-cta">Ler →</a>
+            </div>
+          </div>
+        </article>`;
+    }).join('');
+
+    articlesGrid.querySelectorAll('.article-card').forEach(el => observer.observe(el));
+  })();
+}
+
+// ─── PUBLICAÇÕES — carrega do Supabase com filtros ────────────
 const pubGrid = document.getElementById('pubGrid');
 if (pubGrid && window.YLA) {
   const searchInput    = document.getElementById('searchInput');
@@ -116,22 +168,40 @@ if (pubGrid && window.YLA) {
 
   let todosArtigos = [];
 
+  function renderVazio() {
+    pubGrid.innerHTML = `
+      <div style="grid-column:1/-1;text-align:center;padding:80px 20px;">
+        <div style="font-size:56px;margin-bottom:20px;">🔬</div>
+        <h3 style="font-family:var(--font-display);font-size:24px;font-weight:800;color:var(--gray-800);letter-spacing:-0.5px;margin-bottom:12px;">
+          Nenhuma publicação ainda
+        </h3>
+        <p style="color:var(--gray-400);font-size:16px;max-width:420px;margin:0 auto 28px;line-height:1.6;">
+          As primeiras pesquisas aprovadas pela equipe editorial aparecerão aqui. Seja o primeiro a submeter a sua!
+        </p>
+        <a href="enviar.html" class="btn-primary btn-large">Publicar minha pesquisa →</a>
+      </div>`;
+  }
+
+  function renderSemResultados() {
+    pubGrid.innerHTML = `
+      <div style="grid-column:1/-1;text-align:center;padding:80px 20px;">
+        <div style="font-size:48px;margin-bottom:16px;">🔍</div>
+        <h3 style="font-family:var(--font-display);font-size:20px;font-weight:700;color:var(--gray-700);margin-bottom:8px;">
+          Nenhuma pesquisa encontrada
+        </h3>
+        <p style="color:var(--gray-400);font-size:15px;">Tente buscar por outro termo ou área.</p>
+      </div>`;
+  }
+
   function renderCards(artigos) {
-    if (artigos.length === 0) {
-      pubGrid.innerHTML = `
-        <div style="grid-column:1/-1; text-align:center; padding:60px 0; color:var(--gray-400);">
-          <div style="font-size:40px; margin-bottom:12px;">🔍</div>
-          <p style="font-size:16px;">Nenhuma pesquisa encontrada.</p>
-        </div>`;
-      return;
-    }
+    if (todosArtigos.length === 0) { renderVazio(); return; }
+    if (artigos.length === 0)      { renderSemResultados(); return; }
 
     pubGrid.innerHTML = artigos.map(p => {
       const cores    = getCores(p.area);
       const initials = getInitials(p.nome);
-      const tags     = (p.keywords || '').split(',').slice(0, 3).map(k =>
-        `<span class="tag">${k.trim()}</span>`
-      ).join('');
+      const tags     = (p.keywords || '').split(',').slice(0, 3)
+        .map(k => `<span class="tag">${k.trim()}</span>`).join('');
       const catNorm  = normalizarArea(p.area);
 
       return `
@@ -146,7 +216,7 @@ if (pubGrid && window.YLA) {
             <div class="tags-row">${tags}</div>
             <div class="publist-footer">
               <div class="publist-author">
-                <div class="author-avatar" style="background:${cores.initials_color};width:32px;height:32px;font-size:11px;">${initials}</div>
+                <div class="author-avatar" style="background:${cores.cor};width:32px;height:32px;font-size:11px;">${initials}</div>
                 <div>
                   <div class="author-name">${p.nome}</div>
                   <div class="author-school">${p.pais} · ${formatarData(p.publicado_em)}</div>
@@ -158,7 +228,6 @@ if (pubGrid && window.YLA) {
         </div>`;
     }).join('');
 
-    // re-observa os novos cards para o fade-in
     pubGrid.querySelectorAll('.publist-card').forEach(el => observer.observe(el));
   }
 
@@ -175,67 +244,88 @@ if (pubGrid && window.YLA) {
 
   async function carregarPesquisas() {
     pubGrid.innerHTML = `
-      <div style="grid-column:1/-1;text-align:center;padding:60px 0;color:var(--gray-400);">
+      <div style="grid-column:1/-1;text-align:center;padding:80px 20px;color:var(--gray-400);">
         <div style="font-size:32px;margin-bottom:12px;">⏳</div>
-        <p>Carregando pesquisas...</p>
+        <p style="font-size:15px;">Carregando pesquisas...</p>
       </div>`;
 
-    const ordem = orderFilter?.value === 'antigas' ? 'antigas' : 'recentes';
+    const ordem  = orderFilter?.value === 'antigas' ? 'antigas' : 'recentes';
     todosArtigos = await window.YLA.listarPesquisas({ ordem });
+
+    // Aplica filtro de categoria vindo da URL (?cat=biologia)
+    const params = new URLSearchParams(window.location.search);
+    const catURL = params.get('cat');
+    if (catURL && categoryFilter) {
+      const options = Array.from(categoryFilter.options);
+      const match   = options.find(o => o.value.toLowerCase().includes(catURL.toLowerCase()));
+      if (match) categoryFilter.value = match.value;
+    }
+
     filtrarLocal();
   }
 
   carregarPesquisas();
 
-  searchInput?.addEventListener('input',  filtrarLocal);
+  searchInput?.addEventListener('input', filtrarLocal);
   categoryFilter?.addEventListener('change', filtrarLocal);
   orderFilter?.addEventListener('change', carregarPesquisas);
 }
 
-// ─── ARTIGO INDIVIDUAL — carrega do Supabase ─────────────────
+// ─── ARTIGO INDIVIDUAL ────────────────────────────────────────
 const articleBody = document.getElementById('articleBody');
 if (articleBody && window.YLA) {
   const params = new URLSearchParams(window.location.search);
   const id     = params.get('id');
 
   if (!id) {
-    articleBody.innerHTML = '<p>Artigo não encontrado.</p>';
+    articleBody.innerHTML = `
+      <div style="text-align:center;padding:60px 20px;">
+        <div style="font-size:48px;margin-bottom:16px;">🔍</div>
+        <p style="color:var(--gray-500);">Artigo não encontrado.</p>
+        <a href="publicacoes.html" class="btn-primary" style="display:inline-block;margin-top:16px;">Ver todas as publicações</a>
+      </div>`;
   } else {
     (async () => {
       const p = await window.YLA.buscarPesquisa(id);
+
       if (!p) {
-        articleBody.innerHTML = '<p>Artigo não encontrado ou ainda não publicado.</p>';
+        articleBody.innerHTML = `
+          <div style="text-align:center;padding:60px 20px;">
+            <div style="font-size:48px;margin-bottom:16px;">🔍</div>
+            <p style="color:var(--gray-500);">Artigo não encontrado ou ainda não publicado.</p>
+            <a href="publicacoes.html" class="btn-primary" style="display:inline-block;margin-top:16px;">Ver todas as publicações</a>
+          </div>`;
         return;
       }
 
-      // Atualiza título da aba
       document.title = `${p.titulo} — YLA`;
 
-      // Atualiza campos do hero (se existirem no artigo.html)
-      const elTitulo   = document.getElementById('artTitulo');
-      const elArea     = document.getElementById('artArea');
-      const elData     = document.getElementById('artData');
-      const elPais     = document.getElementById('artPais');
-      const elResumo   = document.getElementById('artResumo');
-      const elNome     = document.getElementById('artNome');
-      const elEscola   = document.getElementById('artEscola');
-      const elOrient   = document.getElementById('artOrient');
-      const elKeywords = document.getElementById('artKeywords');
+      const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+      set('artTitulo',       p.titulo);
+      set('artArea',         p.area);
+      set('artData',         formatarData(p.publicado_em));
+      set('artPais',         p.pais);
+      set('artResumo',       p.resumo);
+      set('artNome',         p.nome);
+      set('artEscola',       p.escola);
+      set('artOrient',       p.orientador || '—');
+      set('artIdioma',       p.idioma);
+      set('artPaisSidebar',  p.pais);
+      set('artAreaSidebar',  p.area);
+      set('artDataSidebar',  formatarData(p.publicado_em));
 
-      if (elTitulo)   elTitulo.textContent   = p.titulo;
-      if (elArea)     elArea.textContent      = p.area;
-      if (elData)     elData.textContent      = formatarData(p.publicado_em);
-      if (elPais)     elPais.textContent      = p.pais;
-      if (elResumo)   elResumo.textContent    = p.resumo;
-      if (elNome)     elNome.textContent      = p.nome;
-      if (elEscola)   elEscola.textContent    = p.escola;
-      if (elOrient)   elOrient.textContent    = p.orientador || '—';
+      const avatar = document.getElementById('artAvatar');
+      if (avatar) {
+        avatar.textContent       = getInitials(p.nome);
+        avatar.style.background  = getCores(p.area).cor;
+      }
+
+      const elKeywords = document.getElementById('artKeywords');
       if (elKeywords) {
         elKeywords.innerHTML = (p.keywords || '').split(',')
           .map(k => `<span class="tag">${k.trim()}</span>`).join('');
       }
 
-      // Renderiza o corpo do artigo — preserva quebras de parágrafo
       const paragrafos = p.artigo_texto
         .split(/\n\n+/)
         .map(par => `<p>${par.replace(/\n/g, '<br>')}</p>`)
@@ -247,9 +337,8 @@ if (articleBody && window.YLA) {
 
 // ─── FORMULÁRIO DE ENVIO (enviar.html) ───────────────────────
 const submitForm = document.getElementById('submitForm');
-if (submitForm && window.YLA) {
+if (submitForm && window.YLA && document.getElementById('artigo')) {
 
-  // Validação visual dos campos obrigatórios
   function validarForm(form) {
     let valido = true;
     form.querySelectorAll('[required]').forEach(field => {
@@ -264,53 +353,49 @@ if (submitForm && window.YLA) {
     return valido;
   }
 
-  // Só aplica para o formulário da página enviar.html
-  // (contato.html tem seu próprio handler abaixo)
-  if (document.getElementById('artigo')) {
-    submitForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      if (!validarForm(submitForm)) return;
+  submitForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!validarForm(submitForm)) return;
 
-      const btn = submitForm.querySelector('.btn-form-submit');
-      btn.textContent = 'Enviando...';
-      btn.disabled    = true;
+    const btn = submitForm.querySelector('.btn-form-submit');
+    btn.textContent = 'Enviando...';
+    btn.disabled    = true;
 
-      const result = await window.YLA.enviarPesquisa({
-        nome:          submitForm.querySelector('#nome').value.trim(),
-        email:         submitForm.querySelector('#email').value.trim(),
-        idade:         submitForm.querySelector('#idade').value,
-        pais:          submitForm.querySelector('#pais').value,
-        escola:        submitForm.querySelector('#escola').value.trim(),
-        orientador:    submitForm.querySelector('#orientador').value.trim(),
-        coautores:     submitForm.querySelector('#coautores').value.trim(),
-        titulo:        submitForm.querySelector('#titulo').value.trim(),
-        area:          submitForm.querySelector('#area').value,
-        idioma:        submitForm.querySelector('#idioma').value,
-        resumo:        submitForm.querySelector('#resumo').value.trim(),
-        keywords:      submitForm.querySelector('#keywords').value.trim(),
-        artigo_texto:  submitForm.querySelector('#artigo').value.trim(),
-      });
-
-      if (result.ok) {
-        btn.textContent  = '✓ Enviado com sucesso!';
-        btn.style.background = '#22c55e';
-        submitForm.reset();
-        setTimeout(() => {
-          btn.textContent      = 'Enviar pesquisa para revisão →';
-          btn.style.background = '';
-          btn.disabled         = false;
-        }, 4000);
-      } else {
-        btn.textContent      = '✗ Erro ao enviar. Tente novamente.';
-        btn.style.background = '#ef4444';
-        btn.disabled         = false;
-        setTimeout(() => {
-          btn.textContent      = 'Enviar pesquisa para revisão →';
-          btn.style.background = '';
-        }, 3000);
-      }
+    const result = await window.YLA.enviarPesquisa({
+      nome:         submitForm.querySelector('#nome').value.trim(),
+      email:        submitForm.querySelector('#email').value.trim(),
+      idade:        submitForm.querySelector('#idade').value,
+      pais:         submitForm.querySelector('#pais').value,
+      escola:       submitForm.querySelector('#escola').value.trim(),
+      orientador:   submitForm.querySelector('#orientador').value.trim(),
+      coautores:    submitForm.querySelector('#coautores').value.trim(),
+      titulo:       submitForm.querySelector('#titulo').value.trim(),
+      area:         submitForm.querySelector('#area').value,
+      idioma:       submitForm.querySelector('#idioma').value,
+      resumo:       submitForm.querySelector('#resumo').value.trim(),
+      keywords:     submitForm.querySelector('#keywords').value.trim(),
+      artigo_texto: submitForm.querySelector('#artigo').value.trim(),
     });
-  }
+
+    if (result.ok) {
+      btn.textContent      = '✓ Enviado com sucesso!';
+      btn.style.background = '#22c55e';
+      submitForm.reset();
+      setTimeout(() => {
+        btn.textContent      = 'Enviar pesquisa para revisão →';
+        btn.style.background = '';
+        btn.disabled         = false;
+      }, 4000);
+    } else {
+      btn.textContent      = '✗ Erro ao enviar. Tente novamente.';
+      btn.style.background = '#ef4444';
+      btn.disabled         = false;
+      setTimeout(() => {
+        btn.textContent      = 'Enviar pesquisa para revisão →';
+        btn.style.background = '';
+      }, 3000);
+    }
+  });
 }
 
 // ─── FORMULÁRIO DE CONTATO (contato.html) ────────────────────

@@ -31,7 +31,6 @@
   </div>
 </header>
 
-<!-- HERO do artigo — preenchido pelo JS -->
 <div class="article-hero">
   <div class="container">
     <div class="article-hero-inner">
@@ -54,18 +53,15 @@
 <div class="article-layout">
   <main class="article-content">
 
-    <!-- Resumo -->
     <div class="article-abstract">
       <div class="abstract-label">Resumo</div>
       <p class="abstract-text" id="artResumo">Carregando...</p>
     </div>
 
-    <!-- Corpo do artigo — preenchido pelo JS -->
     <div class="article-body" id="articleBody">
       <p style="color:var(--gray-400);text-align:center;padding:40px 0;">Carregando conteúdo...</p>
     </div>
 
-    <!-- Palavras-chave -->
     <div class="article-keywords">
       <div class="keywords-label">Palavras-chave</div>
       <div class="tags-row" id="artKeywords"></div>
@@ -99,10 +95,7 @@
       <div style="display:flex;gap:8px;">
         <a href="#" class="social-link"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
         <a href="#" class="social-link"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2"/><path d="M7 10v7M7 7v.01M12 17v-5c0-1 .5-2 2-2s2 1 2 2v5"/></svg></a>
-        <a href="#" onclick="navigator.clipboard.writeText(location.href); this.textContent='✓'; setTimeout(()=>this.textContent='🔗',1500); return false;"
-           class="social-link" title="Copiar link">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-        </a>
+        <a href="#" onclick="navigator.clipboard.writeText(location.href);this.textContent='✓';setTimeout(()=>this.textContent='🔗',1500);return false;" class="social-link" title="Copiar link">🔗</a>
       </div>
     </div>
 
@@ -143,34 +136,6 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="supabase.js"></script>
-<script>
-  // Preenche campos extras do sidebar após o main.js popular os principais
-  document.addEventListener('DOMContentLoaded', () => {
-    // Espera o main.js terminar a fetch (usa MutationObserver no título)
-    const syncSidebar = () => {
-      const nome  = document.getElementById('artNome')?.textContent;
-      const area  = document.getElementById('artArea')?.textContent;
-      const data  = document.getElementById('artData')?.textContent;
-      const pais  = document.getElementById('artPais')?.textContent;
-      const idiom = document.getElementById('artIdioma');
-
-      if (document.getElementById('artPaisSidebar'))
-        document.getElementById('artPaisSidebar').textContent = pais || '—';
-      if (document.getElementById('artAreaSidebar'))
-        document.getElementById('artAreaSidebar').textContent = area || '—';
-      if (document.getElementById('artDataSidebar'))
-        document.getElementById('artDataSidebar').textContent = data || '—';
-
-      // Avatar com iniciais
-      const avatar = document.getElementById('artAvatar');
-      if (avatar && nome && nome !== '—') {
-        avatar.textContent = nome.split(' ').slice(0,2).map(p=>p[0]).join('').toUpperCase();
-      }
-    };
-    // Aguarda um ciclo para o JS assíncrono terminar
-    setTimeout(syncSidebar, 1500);
-  });
-</script>
 <script src="main.js"></script>
 </body>
 </html>
