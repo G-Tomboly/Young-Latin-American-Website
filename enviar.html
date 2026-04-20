@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Publicar Pesquisa — Young Latin American</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="form-page">
+
+<header class="navbar" id="navbar">
+  <div class="nav-container">
+    <a href="index.html" class="logo">
+      <span class="logo-mark">YLA</span>
+      <span class="logo-text">Young Latin American</span>
+    </a>
+    <nav class="nav-links" id="navLinks">
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="publicacoes.html" class="nav-link">Publicações</a>
+      <a href="acoes.html" class="nav-link">Ações</a>
+      <a href="sobre.html" class="nav-link">Sobre</a>
+      <a href="diretrizes.html" class="nav-link">Diretrizes</a>
+      <a href="faq.html" class="nav-link">FAQ</a>
+      <a href="contato.html" class="nav-link">Contato</a>
+    </nav>
+    <a href="enviar.html" class="btn-submit">Publicar Pesquisa</a>
+    <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<section class="page-header">
+  <div class="container">
+    <div class="page-header-content">
+      <div class="page-header-badge">Submissão de Artigos</div>
+      <h1>Envie sua pesquisa</h1>
+      <p>Gratuito, aberto e simples. Sua pesquisa pode alcançar jovens e educadores em toda a América Latina.</p>
+    </div>
+  </div>
+</section>
+
+<section class="form-section">
+  <div class="container">
+    <div class="form-container">
+
+      <div class="form-steps">
+        <div class="form-step active">1 · Identificação</div>
+        <div class="form-step">2 · Pesquisa</div>
+        <div class="form-step">3 · Revisão</div>
+      </div>
+
+      <form class="form-card" id="submitForm" novalidate>
+
+        <!-- AUTHOR INFO -->
+        <div class="form-section-title">Dados do(s) autor(es)</div>
+        <p class="form-section-desc">Preencha as informações sobre quem realizou a pesquisa.</p>
+
+        <div class="form-row-2">
+          <div class="form-row">
+            <label class="form-label" for="nome">Nome completo <span>*</span></label>
+            <input class="form-input" type="text" id="nome" name="nome" placeholder="Seu nome completo" required>
+          </div>
+          <div class="form-row">
+            <label class="form-label" for="email">Email <span>*</span></label>
+            <input class="form-input" type="email" id="email" name="email" placeholder="seu@email.com" required>
+          </div>
+        </div>
+
+        <div class="form-row-2">
+          <div class="form-row">
+            <label class="form-label" for="idade">Idade <span>*</span></label>
+            <select class="form-select form-input" id="idade" name="idade" required>
+              <option value="">Selecione</option>
+              <option>13 anos</option><option>14 anos</option><option>15 anos</option>
+              <option>16 anos</option><option>17 anos</option><option>18 anos</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <label class="form-label" for="pais">País <span>*</span></label>
+            <select class="form-select form-input" id="pais" name="pais" required>
+              <option value="">Selecione</option>
+              <option>Argentina</option><option>Bolívia</option><option>Brasil</option>
+              <option>Chile</option><option>Colômbia</option><option>Costa Rica</option>
+              <option>Cuba</option><option>Equador</option><option>El Salvador</option>
+              <option>Guatemala</option><option>Honduras</option><option>México</option>
+              <option>Nicarágua</option><option>Panamá</option><option>Paraguai</option>
+              <option>Peru</option><option>República Dominicana</option><option>Uruguai</option>
+              <option>Venezuela</option><option>Outro</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <label class="form-label" for="escola">Escola / Instituição <span>*</span></label>
+          <input class="form-input" type="text" id="escola" name="escola" placeholder="Nome da sua escola ou instituto" required>
+        </div>
+
+        <div class="form-row">
+          <label class="form-label" for="orientador">Orientador(a) <span style="color:var(--gray-400);font-weight:400;">(opcional)</span></label>
+          <input class="form-input" type="text" id="orientador" name="orientador" placeholder="Nome do professor ou orientador, se houver">
+        </div>
+
+        <div class="form-row">
+          <label class="form-label" for="coautores">Co-autores <span style="color:var(--gray-400);font-weight:400;">(opcional)</span></label>
+          <input class="form-input" type="text" id="coautores" name="coautores" placeholder="Nomes separados por vírgula">
+          <p class="form-hint">Se a pesquisa foi realizada em grupo, liste todos os participantes.</p>
+        </div>
+
+        <hr class="form-divider">
+
+        <!-- RESEARCH INFO -->
+        <div class="form-section-title">Sobre a pesquisa</div>
+        <p class="form-section-desc">Informações sobre o trabalho científico que você está submetendo.</p>
+
+        <div class="form-row">
+          <label class="form-label" for="titulo">Título da pesquisa <span>*</span></label>
+          <input class="form-input" type="text" id="titulo" name="titulo" placeholder="Título completo e descritivo do seu trabalho" required>
+        </div>
+
+        <div class="form-row-2">
+          <div class="form-row">
+            <label class="form-label" for="area">Área do conhecimento <span>*</span></label>
+            <select class="form-select form-input" id="area" name="area" required>
+              <option value="">Selecione a área</option>
+              <option>Biologia</option><option>Química</option><option>Física</option>
+              <option>Meio Ambiente / Ecologia</option><option>Tecnologia / Computação</option>
+              <option>Saúde / Medicina</option><option>Matemática</option>
+              <option>Ciências Sociais</option><option>História / Humanidades</option>
+              <option>Astronomia / Astrofísica</option><option>Outro</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <label class="form-label" for="idioma">Idioma do artigo <span>*</span></label>
+            <select class="form-select form-input" id="idioma" name="idioma" required>
+              <option value="">Selecione</option>
+              <option>Português</option>
+              <option>Español</option>
+              <option>English</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <label class="form-label" for="resumo">Resumo / Abstract <span>*</span></label>
+          <textarea class="form-textarea" id="resumo" name="resumo" placeholder="Descreva em 150–300 palavras o objetivo, metodologia e principais resultados da sua pesquisa." style="min-height:140px;" required></textarea>
+          <p class="form-hint">O resumo é a primeira coisa que os leitores verão. Seja claro e objetivo.</p>
+        </div>
+
+        <div class="form-row">
+          <label class="form-label" for="keywords">Palavras-chave <span>*</span></label>
+          <input class="form-input" type="text" id="keywords" name="keywords" placeholder="Ex: pH, contaminação, recursos hídricos, Bogotá" required>
+          <p class="form-hint">Separe por vírgulas. Use entre 3 e 8 palavras-chave.</p>
+        </div>
+
+        <div class="form-row">
+          <label class="form-label" for="artigo">Texto completo da pesquisa <span>*</span></label>
+          <textarea class="form-textarea" id="artigo" name="artigo" placeholder="Cole aqui o texto completo do seu artigo, incluindo introdução, metodologia, resultados, discussão e referências." style="min-height:280px;" required></textarea>
+          <p class="form-hint">Você também pode enviar um arquivo PDF por email para <strong>publicacoes@younglatinamerican.org</strong> após o envio do formulário.</p>
+        </div>
+
+        <hr class="form-divider">
+
+        <!-- TERMS -->
+        <div class="form-section-title">Termos e declarações</div>
+
+        <div class="checkbox-row">
+          <input type="checkbox" id="original" required>
+          <label class="checkbox-label" for="original">Declaro que esta pesquisa é de minha autoria (ou dos co-autores listados) e que é um trabalho original, não publicado anteriormente em outra plataforma.</label>
+        </div>
+        <div class="checkbox-row">
+          <input type="checkbox" id="termos" required>
+          <label class="checkbox-label" for="termos">Li e concordo com as <a href="diretrizes.html">diretrizes de publicação</a> da Young Latin American e autorizo a publicação do trabalho nesta plataforma.</label>
+        </div>
+        <div class="checkbox-row">
+          <input type="checkbox" id="responsabilidade" required>
+          <label class="checkbox-label" for="responsabilidade">Assumo responsabilidade pelo conteúdo da pesquisa e pela veracidade das informações prestadas.</label>
+        </div>
+
+        <div class="form-submit-row">
+          <button type="button" class="btn-outline">Salvar rascunho</button>
+          <button type="submit" class="btn-form-submit">Enviar pesquisa para revisão →</button>
+        </div>
+
+      </form>
+
+      <div style="background: var(--blue-50); border: 1px solid var(--blue-100); border-radius: var(--radius-lg); padding: 24px 28px; margin-top: 24px;">
+        <div style="font-family: var(--font-display); font-size: 14px; font-weight: 700; color: var(--blue-700); margin-bottom: 10px;">ℹ️ O que acontece depois?</div>
+        <p style="font-size: 14px; color: var(--blue-600); line-height: 1.7; margin: 0;">Nossa equipe editorial analisa cada submissão em até <strong>15 dias úteis</strong>. Você receberá um email com o resultado. Em caso de aprovação, sua pesquisa será publicada na plataforma. Se houver sugestões de melhoria, entraremos em contato antes da publicação.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="footer-logo"><span class="logo-mark">YLA</span><span class="logo-text">Young Latin American</span></div>
+        <p class="footer-tagline">Ciência jovem. Impacto real. América Latina.</p>
+      </div>
+      <div class="footer-col">
+        <h4 class="footer-col-title">Plataforma</h4>
+        <ul class="footer-links"><li><a href="publicacoes.html">Publicações</a></li><li><a href="diretrizes.html">Diretrizes</a></li><li><a href="faq.html">FAQ</a></li></ul>
+      </div>
+      <div class="footer-col">
+        <h4 class="footer-col-title">Projeto</h4>
+        <ul class="footer-links"><li><a href="sobre.html">Sobre</a></li><li><a href="acoes.html">Ações</a></li><li><a href="contato.html">Contato</a></li></ul>
+      </div>
+      <div class="footer-col"></div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2025 Young Latin American. Todos os direitos reservados.</p>
+      <p>Feito com 💙 para jovens pesquisadores da América Latina</p>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="supabase.js"></script>
+<script src="main.js"></script>
+</body>
+</html>

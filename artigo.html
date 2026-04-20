@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Artigo — YLA</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="article-page">
+
+<header class="navbar" id="navbar">
+  <div class="nav-container">
+    <a href="index.html" class="logo">
+      <span class="logo-mark">YLA</span>
+      <span class="logo-text">Young Latin American</span>
+    </a>
+    <nav class="nav-links" id="navLinks">
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="publicacoes.html" class="nav-link active">Publicações</a>
+      <a href="acoes.html" class="nav-link">Ações</a>
+      <a href="sobre.html" class="nav-link">Sobre</a>
+      <a href="diretrizes.html" class="nav-link">Diretrizes</a>
+      <a href="faq.html" class="nav-link">FAQ</a>
+      <a href="contato.html" class="nav-link">Contato</a>
+    </nav>
+    <a href="enviar.html" class="btn-submit">Publicar Pesquisa</a>
+    <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<!-- HERO do artigo — preenchido pelo JS -->
+<div class="article-hero">
+  <div class="container">
+    <div class="article-hero-inner">
+      <div class="article-category-badge" id="artArea">Carregando...</div>
+      <h1 class="article-main-title" id="artTitulo">Carregando artigo...</h1>
+      <div class="article-meta-row">
+        <div class="article-meta-item">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+          <span id="artData"></span>
+        </div>
+        <div class="article-meta-item">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/></svg>
+          <span id="artPais"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="article-layout">
+  <main class="article-content">
+
+    <!-- Resumo -->
+    <div class="article-abstract">
+      <div class="abstract-label">Resumo</div>
+      <p class="abstract-text" id="artResumo">Carregando...</p>
+    </div>
+
+    <!-- Corpo do artigo — preenchido pelo JS -->
+    <div class="article-body" id="articleBody">
+      <p style="color:var(--gray-400);text-align:center;padding:40px 0;">Carregando conteúdo...</p>
+    </div>
+
+    <!-- Palavras-chave -->
+    <div class="article-keywords">
+      <div class="keywords-label">Palavras-chave</div>
+      <div class="tags-row" id="artKeywords"></div>
+    </div>
+
+  </main>
+
+  <aside class="article-sidebar">
+    <div class="sidebar-card">
+      <div class="sidebar-label">Autor</div>
+      <div class="author-block">
+        <div class="author-avatar-lg" style="background:#f97316;" id="artAvatar">?</div>
+        <div>
+          <div class="author-info-name" id="artNome">—</div>
+          <div class="author-info-school" id="artEscola">—</div>
+        </div>
+      </div>
+      <div class="author-detail"><strong>País:</strong> <span id="artPaisSidebar">—</span></div>
+      <div class="author-detail"><strong>Orientador(a):</strong> <span id="artOrient">—</span></div>
+    </div>
+
+    <div class="sidebar-card">
+      <div class="sidebar-label">Sobre o artigo</div>
+      <div class="author-detail"><strong>Área:</strong> <span id="artAreaSidebar">—</span></div>
+      <div class="author-detail"><strong>Publicado em:</strong> <span id="artDataSidebar">—</span></div>
+      <div class="author-detail"><strong>Idioma:</strong> <span id="artIdioma">—</span></div>
+    </div>
+
+    <div class="sidebar-card">
+      <div class="sidebar-label">Compartilhar</div>
+      <div style="display:flex;gap:8px;">
+        <a href="#" class="social-link"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
+        <a href="#" class="social-link"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2"/><path d="M7 10v7M7 7v.01M12 17v-5c0-1 .5-2 2-2s2 1 2 2v5"/></svg></a>
+        <a href="#" onclick="navigator.clipboard.writeText(location.href); this.textContent='✓'; setTimeout(()=>this.textContent='🔗',1500); return false;"
+           class="social-link" title="Copiar link">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+        </a>
+      </div>
+    </div>
+
+    <div class="sidebar-card" style="background:var(--orange-50);border-color:var(--orange-100);">
+      <div style="font-family:var(--font-display);font-size:14px;font-weight:700;color:var(--orange-700);margin-bottom:8px;">Publique sua pesquisa</div>
+      <p style="font-size:13px;color:var(--orange-600);line-height:1.6;margin-bottom:14px;">Você também tem uma pesquisa? Envie para a YLA e ganhe visibilidade na América Latina.</p>
+      <a href="enviar.html" class="btn-primary" style="font-size:13px;padding:10px 18px;display:block;text-align:center;">Enviar pesquisa</a>
+    </div>
+  </aside>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="footer-logo"><span class="logo-mark">YLA</span><span class="logo-text">Young Latin American</span></div>
+        <p class="footer-tagline">Ciência jovem. Impacto real. América Latina.</p>
+      </div>
+      <div class="footer-col">
+        <h4 class="footer-col-title">Plataforma</h4>
+        <ul class="footer-links"><li><a href="publicacoes.html">Publicações</a></li><li><a href="enviar.html">Publicar</a></li><li><a href="diretrizes.html">Diretrizes</a></li></ul>
+      </div>
+      <div class="footer-col">
+        <h4 class="footer-col-title">Projeto</h4>
+        <ul class="footer-links"><li><a href="sobre.html">Sobre</a></li><li><a href="acoes.html">Ações</a></li><li><a href="contato.html">Contato</a></li></ul>
+      </div>
+      <div class="footer-col">
+        <h4 class="footer-col-title">Links</h4>
+        <ul class="footer-links"><li><a href="faq.html">FAQ</a></li></ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2025 Young Latin American. Todos os direitos reservados.</p>
+      <p>Feito com 💙 para jovens pesquisadores da América Latina</p>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="supabase.js"></script>
+<script>
+  // Preenche campos extras do sidebar após o main.js popular os principais
+  document.addEventListener('DOMContentLoaded', () => {
+    // Espera o main.js terminar a fetch (usa MutationObserver no título)
+    const syncSidebar = () => {
+      const nome  = document.getElementById('artNome')?.textContent;
+      const area  = document.getElementById('artArea')?.textContent;
+      const data  = document.getElementById('artData')?.textContent;
+      const pais  = document.getElementById('artPais')?.textContent;
+      const idiom = document.getElementById('artIdioma');
+
+      if (document.getElementById('artPaisSidebar'))
+        document.getElementById('artPaisSidebar').textContent = pais || '—';
+      if (document.getElementById('artAreaSidebar'))
+        document.getElementById('artAreaSidebar').textContent = area || '—';
+      if (document.getElementById('artDataSidebar'))
+        document.getElementById('artDataSidebar').textContent = data || '—';
+
+      // Avatar com iniciais
+      const avatar = document.getElementById('artAvatar');
+      if (avatar && nome && nome !== '—') {
+        avatar.textContent = nome.split(' ').slice(0,2).map(p=>p[0]).join('').toUpperCase();
+      }
+    };
+    // Aguarda um ciclo para o JS assíncrono terminar
+    setTimeout(syncSidebar, 1500);
+  });
+</script>
+<script src="main.js"></script>
+</body>
+</html>

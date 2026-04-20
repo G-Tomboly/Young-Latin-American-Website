@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: young-latin-american
+    runtime: static
+    staticPublishPath: .
+    buildCommand: echo "Static site - no build needed"
+    pullRequestPreviewsEnabled: true
+    headers:
+      - path: /*
+        name: Cache-Control
+        value: public, max-age=3600
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
