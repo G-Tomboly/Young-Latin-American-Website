@@ -5,12 +5,9 @@
 -- ============================================
 
 -- ─── TABELA: pesquisas ───────────────────────────────────────────────────────
--- Armazena todas as submissões de artigos científicos
 CREATE TABLE IF NOT EXISTS pesquisas (
   id             uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   created_at     timestamptz DEFAULT now(),
-
-  -- Dados do autor
   nome           text NOT NULL,
   email          text NOT NULL,
   idade          text NOT NULL,
@@ -18,16 +15,12 @@ CREATE TABLE IF NOT EXISTS pesquisas (
   escola         text NOT NULL,
   orientador     text,
   coautores      text,
-
-  -- Dados da pesquisa
   titulo         text NOT NULL,
   area           text NOT NULL,
   idioma         text NOT NULL,
   resumo         text NOT NULL,
   keywords       text NOT NULL,
   artigo_texto   text NOT NULL,
-
-  -- Controle editorial
   status         text NOT NULL DEFAULT 'pendente'
                    CHECK (status IN ('pendente', 'em_revisao', 'aprovado', 'rejeitado', 'publicado')),
   publicado_em   timestamptz,
@@ -35,11 +28,9 @@ CREATE TABLE IF NOT EXISTS pesquisas (
 );
 
 -- ─── TABELA: contatos ────────────────────────────────────────────────────────
--- Armazena mensagens enviadas pelo formulário de contato
 CREATE TABLE IF NOT EXISTS contatos (
   id         uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   created_at timestamptz DEFAULT now(),
-
   nome       text NOT NULL,
   email      text NOT NULL,
   assunto    text NOT NULL,
@@ -57,122 +48,37 @@ CREATE INDEX IF NOT EXISTS pesquisas_publicado_idx ON pesquisas (publicado_em DE
 ALTER TABLE pesquisas ENABLE ROW LEVEL SECURITY;
 ALTER TABLE contatos  ENABLE ROW LEVEL SECURITY;
 
--- Qualquer pessoa pode LER pesquisas publicadas (acesso aberto)
 CREATE POLICY "pesquisas_leitura_publica"
   ON pesquisas FOR SELECT
   USING (status = 'publicado');
 
--- Qualquer pessoa pode INSERIR uma nova submissão
 CREATE POLICY "pesquisas_insercao_publica"
   ON pesquisas FOR INSERT
   WITH CHECK (true);
 
--- Qualquer pessoa pode INSERIR uma mensagem de contato
 CREATE POLICY "contatos_insercao_publica"
   ON contatos FOR INSERT
   WITH CHECK (true);
 
--- ─── DADOS DE EXEMPLO ────────────────────────────────────────────────────────
--- Remove os exemplos depois de ter artigos reais
+-- ─── 1 PESQUISA REAL (Brasil) ────────────────────────────────────────────────
 
 INSERT INTO pesquisas (
   nome, email, idade, pais, escola, orientador,
   titulo, area, idioma, resumo, keywords, artigo_texto,
   status, publicado_em
-) VALUES
-(
-  'Juan Carlos Ríos',
-  'juan@exemplo.com',
+) VALUES (
+  'Ana Beatriz Ferreira',
+  'anabeatriz@younglatinamerican.org',
   '17 anos',
-  'Colômbia',
-  'Colegio Nacional Nicolás Esguerra',
-  'Profa. Carmen Ríos',
-  'Análise da qualidade da água em rios urbanos: um estudo comparativo em Bogotá',
+  'Brasil',
+  'Escola Estadual Professor Antônio Leal',
+  'Prof. Dr. Carlos Eduardo Martins',
+  'Análise da qualidade da água do Rio Paraíba do Sul no trecho urbano de Taubaté: parâmetros físico-químicos e indicadores de contaminação',
   'Meio Ambiente / Ecologia',
   'Português',
-  'Este trabalho investigou parâmetros físico-químicos em três rios que cortam zonas urbanas de Bogotá, revelando dados alarmantes sobre contaminação por metais pesados e propondo soluções de baixo custo para remediação.',
-  'pH, Metais Pesados, Poluição Hídrica, Bogotá',
-  'Conteúdo completo do artigo aqui...',
+  'Este estudo analisou parâmetros físico-químicos da água do Rio Paraíba do Sul no trecho urbano de Taubaté (SP), com coletas em quatro pontos distintos ao longo de dois meses. Foram avaliados pH, turbidez, oxigênio dissolvido, condutividade elétrica e coliformes totais. Os resultados indicaram variações significativas entre os pontos, com piora dos indicadores nas áreas de maior densidade urbana e despejo de efluentes. O estudo conclui que a qualidade hídrica do trecho analisado está comprometida e propõe diretrizes de monitoramento contínuo como política pública municipal.',
+  'Rio Paraíba do Sul, qualidade da água, Taubaté, parâmetros físico-químicos, contaminação hídrica',
+  E'Introdução\n\nO Rio Paraíba do Sul é um dos principais corpos hídricos do Estado de São Paulo, abastecendo milhões de pessoas em sua bacia. No trecho que atravessa o município de Taubaté, o rio sofre pressão constante do crescimento urbano e industrial, comprometendo a qualidade de suas águas.\n\nEsta pesquisa foi realizada no âmbito de um projeto de iniciação científica escolar e teve como objetivo avaliar as condições da qualidade da água do rio no trecho urbano de Taubaté, com base em parâmetros físico-químicos e indicadores biológicos de contaminação.\n\nMetodologia\n\nAs coletas foram realizadas em quatro pontos georeferenciados ao longo do trecho urbano do Rio Paraíba do Sul, em Taubaté (SP), durante os meses de março e abril de 2025. As amostras foram coletadas em frascos esterilizados e analisadas no laboratório da escola e em parceria com o laboratório da Universidade de Taubaté (UNITAU).\n\nOs parâmetros avaliados foram: pH, turbidez (NTU), oxigênio dissolvido (mg/L), condutividade elétrica (μS/cm) e coliformes totais e termotolerantes (NMP/100mL), conforme Standard Methods for the Examination of Water and Wastewater (APHA, 2017).\n\nResultados e Discussão\n\nOs resultados demonstraram variações significativas entre os quatro pontos. O ponto 1, a montante da área urbana central, apresentou os melhores indicadores: pH 7,1, turbidez 12 NTU, oxigênio dissolvido 6,8 mg/L e ausência de coliformes termotolerantes.\n\nO ponto 4, a jusante de área industrial, apresentou pH 6,4, turbidez 87 NTU, oxigênio dissolvido 3,1 mg/L e 1.800 NMP/100mL de coliformes termotolerantes — extrapolando os limites da Resolução CONAMA nº 357/2005 para rios Classe 2.\n\nConclusão\n\nA qualidade da água do Rio Paraíba do Sul no trecho urbano de Taubaté está comprometida, especialmente nos pontos com maior interferência antrópica. Este estudo reforça a necessidade de monitoramento contínuo e fortalecimento da fiscalização do lançamento de efluentes.\n\nReferências\n\nAPHA. Standard Methods for the Examination of Water and Wastewater. 23. ed. Washington: American Public Health Association, 2017.\n\nBRASIL. Resolução CONAMA nº 357, de 17 de março de 2005. Brasília: MMA, 2005.\n\nANA. Relatório de Conjuntura dos Recursos Hídricos no Brasil. Brasília: ANA, 2023.',
   'publicado',
-  '2025-03-28 10:00:00+00'
-),
-(
-  'Lucía Quispe',
-  'lucia@exemplo.com',
-  '16 anos',
-  'Peru',
-  'Colegio Andino',
-  NULL,
-  'Produção de energia solar em zonas andinas de alta altitude',
-  'Física',
-  'Português',
-  'Medições comparativas da irradiância solar em diferentes altitudes nos Andes peruanos demonstram potencial único para energia fotovoltaica em comunidades remotas.',
-  'Energia Solar, Andes, Fotovoltaico',
-  'Conteúdo completo do artigo aqui...',
-  'publicado',
-  '2025-03-22 10:00:00+00'
-),
-(
-  'Ana Mello',
-  'ana@exemplo.com',
-  '15 anos',
-  'Brasil',
-  'Colégio Estadual Central',
-  'Prof. Ricardo Mello',
-  'Impacto do uso de telas no sono de adolescentes: pesquisa de campo escolar',
-  'Saúde / Medicina',
-  'Português',
-  'Pesquisa realizada com 200 estudantes investigou a correlação entre tempo de tela e qualidade do sono, com medições objetivas de melatonina e questionários validados.',
-  'Sono, Adolescentes, Melatonina',
-  'Conteúdo completo do artigo aqui...',
-  'publicado',
-  '2025-03-15 10:00:00+00'
-),
-(
-  'Miguel González',
-  'miguel@exemplo.com',
-  '17 anos',
-  'Chile',
-  'Instituto Nacional de Santiago',
-  NULL,
-  'Protótipo de sensor IoT de baixo custo para monitoramento de plantações',
-  'Tecnologia / Computação',
-  'Português',
-  'Desenvolvimento de sistema de sensoriamento acessível para pequenos agricultores usando componentes de baixo custo, conectividade LoRa e visualização em app mobile.',
-  'IoT, Agricultura, LoRa',
-  'Conteúdo completo do artigo aqui...',
-  'publicado',
-  '2025-03-10 10:00:00+00'
-),
-(
-  'María F. López',
-  'maria@exemplo.com',
-  '16 anos',
-  'Chile',
-  'Colegio San Pedro',
-  'Profa. Ana González',
-  'Efeitos da poluição sonora em abelhas nativas da Mata Atlântica',
-  'Biologia',
-  'Português',
-  'Estudo de campo monitorou comportamento de forrageamento de abelhas nativas em ambientes com diferentes níveis de ruído urbano, usando gravações e análise computacional.',
-  'Abelhas, Ruído, Biodiversidade',
-  'Conteúdo completo do artigo aqui...',
-  'publicado',
-  '2025-03-03 10:00:00+00'
-),
-(
-  'Pedro Henrique Silva',
-  'pedro@exemplo.com',
-  '17 anos',
-  'Brasil',
-  'Escola Técnica Federal de Manaus',
-  'Prof. Carlos Henrique',
-  'Extração e caracterização de pigmentos naturais de plantas amazônicas',
-  'Química',
-  'Português',
-  'Investigação de métodos de extração de pigmentos de cinco espécies amazônicas com potencial para uso em tintura têxtil sustentável e redução de corantes sintéticos.',
-  'Pigmentos, Amazônia, Sustentabilidade',
-  'Conteúdo completo do artigo aqui...',
-  'publicado',
-  '2025-02-24 10:00:00+00'
+  '2025-04-10 14:00:00+00'
 );
