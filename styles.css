@@ -97,7 +97,7 @@ ul { list-style: none; }
 .nav-container {
   max-width: var(--container-max);
   margin: 0 auto;
-  padding: 0 48px;
+  padding: 0 240px;
   height: 68px;
   display: flex;
   align-items: center;
