@@ -109,9 +109,33 @@ function normalizarArea(area) {
   return area ? area.split('/')[0].trim().toLowerCase() : '';
 }
 
+// ─── Mapa de bandeiras por país ──────────────────────────────
+const PAIS_FLAG = {
+  'Brasil': '🇧🇷', 'Argentina': '🇦🇷', 'Chile': '🇨🇱',
+  'Colômbia': '🇨🇴', 'Colombia': '🇨🇴', 'México': '🇲🇽', 'Mexico': '🇲🇽',
+  'Peru': '🇵🇪', 'Uruguai': '🇺🇾', 'Paraguai': '🇵🇾',
+  'Bolívia': '🇧🇴', 'Bolivia': '🇧🇴', 'Equador': '🇪🇨', 'Ecuador': '🇪🇨',
+  'Venezuela': '🇻🇪', 'Cuba': '🇨🇺', 'Panamá': '🇵🇦', 'Panama': '🇵🇦',
+  'Costa Rica': '🇨🇷', 'Guatemala': '🇬🇹', 'Honduras': '🇭🇳',
+  'El Salvador': '🇸🇻', 'Nicarágua': '🇳🇮', 'Nicaragua': '🇳🇮',
+  'República Dominicana': '🇩🇴',
+};
+
+// ─── Atualiza o painel de países do globo no hero ─────────────
+function updateHeroCountries(artigos) {
+  const list = document.getElementById('heroCountriesList');
+  if (!list) return;
+  const paises = [...new Set(artigos.map(a => a.pais).filter(Boolean))];
+  if (!paises.length) return;
+  list.innerHTML = paises.map(p => {
+    const flag = PAIS_FLAG[p] || '🌎';
+    return `<span class="hero-country-tag">${flag} ${p}</span>`;
+  }).join('');
+}
+
 // ─── Hero card float — atualiza com pesquisa mais recente ────────
 function updateHeroCardFloat(p) {
-  const card1 = document.querySelector('.card-float-1');
+  const card1 = document.querySelector('.hcf-top-left');
   if (!card1 || !p) return;
   const tag   = card1.querySelector('.hcf-tag');
   const title = card1.querySelector('.hcf-title');
@@ -170,6 +194,7 @@ if (articlesGrid && window.YLA) {
 
     articlesGrid.querySelectorAll('.article-card').forEach(el => observer.observe(el));
     if (recentes[0]) updateHeroCardFloat(recentes[0]);
+    updateHeroCountries(artigos);
   })();
 }
 

@@ -37,7 +37,7 @@
 </header>
 
 <!-- HERO -->
-<section class="hero">
+<section class="hero hero-globe-layout">
   <div class="hero-bg">
     <div class="hero-grid"></div>
     <div class="hero-orb hero-orb-1"></div>
@@ -77,20 +77,40 @@
       </div>
     </div>
   </div>
-  <div class="hero-visual">
-    <div class="hero-card-float card-float-1">
-      <div class="hcf-tag">Meio Ambiente</div>
+
+  <!-- GLOBO NO HERO -->
+  <div class="hero-globe-wrap">
+    <div class="hero-globe-glow"></div>
+    <div class="hero-globe-atm"></div>
+    <canvas id="ylaGlobe" width="960" height="960"></canvas>
+
+    <!-- Balão 1 — pesquisa recente -->
+    <div class="hcf hcf-top-left">
+      <div class="hcf-tag">🌱 Meio Ambiente</div>
       <div class="hcf-title">Qualidade da água do Rio Paraíba do Sul em Taubaté</div>
       <div class="hcf-author">Ana Beatriz Ferreira · Brasil</div>
     </div>
-    <div class="hero-card-float card-float-2">
-      <div class="hcf-tag">Publicar</div>
-      <div class="hcf-title">Sua pesquisa pode ser a próxima a aparecer aqui</div>
-      <div class="hcf-author">Envie sua pesquisa gratuitamente →</div>
+
+    <!-- Balão 2 — convite -->
+    <div class="hcf hcf-bottom-left">
+      <div class="hcf-tag">✨ Publique</div>
+      <div class="hcf-title">Sua pesquisa pode ser a próxima aqui</div>
+      <div class="hcf-cta">Enviar gratuitamente →</div>
     </div>
-    <div class="hero-card-float card-float-3">
-      <div class="hcf-icon">🏆</div>
-      <div class="hcf-small">Nova publicação aprovada</div>
+
+    <!-- Balão 3 — badge aprovação -->
+    <div class="hcf hcf-top-right hcf-badge">
+      <div class="hcf-badge-icon">🏆</div>
+      <div class="hcf-badge-text">Nova publicação aprovada</div>
+    </div>
+
+    <!-- Países ativos — preenchido pelo main.js -->
+    <div class="hero-globe-countries" id="heroCountriesBadge">
+      <span class="globe-dot-pulse"></span>
+      <span class="hero-countries-label">Países ativos:</span>
+      <div class="hero-countries-list" id="heroCountriesList">
+        <span class="hero-country-tag">🇧🇷 Brasil</span>
+      </div>
     </div>
   </div>
 </section>
@@ -98,55 +118,47 @@
 <!-- GLOBE IMPACT SECTION -->
 <section class="globe-section" id="globeSection">
   <div class="container">
-    <div class="globe-layout">
+    <div class="globe-info globe-info-full">
+      <div class="globe-eyebrow">
+        <span class="globe-dot-pulse"></span>
+        Alcance geográfico
+      </div>
+      <h2 class="globe-heading">Ciência jovem<br>sem fronteiras</h2>
+      <p class="globe-subtext">De Brasília a Buenos Aires, jovens pesquisadores de toda a América Latina publicam e ganham reconhecimento pelo seu trabalho. A YLA é o ponto de encontro entre talento e visibilidade.</p>
 
-      <!-- LEFT: Text + Stats -->
-      <div class="globe-info">
-        <div class="globe-eyebrow">
-          <span class="globe-dot-pulse"></span>
-          Alcance geográfico
+      <div class="globe-stats-grid">
+        <div class="globe-stat-item">
+          <div class="globe-stat-top">
+            <span class="globe-stat-number" data-target="1">0</span><span class="globe-stat-plus">+</span>
+          </div>
+          <div class="globe-stat-label">Pesquisadores</div>
         </div>
-        <h2 class="globe-heading">Jovens cientistas<br>do continente todo</h2>
-        <p class="globe-subtext">Pesquisadores de toda a América Latina já publicaram descobertas que importam — e o mapa cresce a cada mês.</p>
-
-        <div class="globe-stats-grid">
-          <div class="globe-stat-item">
-            <div class="globe-stat-top">
-              <span class="globe-stat-number" data-target="1">0</span><span class="globe-stat-plus">+</span>
-            </div>
-            <div class="globe-stat-label">Pesquisadores</div>
+        <div class="globe-stat-item">
+          <div class="globe-stat-top">
+            <span class="globe-stat-number" data-target="1">0</span>
           </div>
-          <div class="globe-stat-item">
-            <div class="globe-stat-top">
-              <span class="globe-stat-number" data-target="1">0</span>
-            </div>
-            <div class="globe-stat-label">Países</div>
-          </div>
-          <div class="globe-stat-item">
-            <div class="globe-stat-top">
-              <span class="globe-stat-number" data-target="1">0</span><span class="globe-stat-plus">+</span>
-            </div>
-            <div class="globe-stat-label">Publicações</div>
-          </div>
-          <div class="globe-stat-item">
-            <div class="globe-stat-top">
-              <span class="globe-stat-number" data-target="15">0</span>
-            </div>
-            <div class="globe-stat-label">Dias p/ publicar</div>
-          </div>
+          <div class="globe-stat-label">Países</div>
         </div>
-
-        <div class="globe-country-tags">
-          <span class="g-tag">🇧🇷 Brasil</span>
+        <div class="globe-stat-item">
+          <div class="globe-stat-top">
+            <span class="globe-stat-number" data-target="1">0</span><span class="globe-stat-plus">+</span>
+          </div>
+          <div class="globe-stat-label">Publicações</div>
+        </div>
+        <div class="globe-stat-item">
+          <div class="globe-stat-top">
+            <span class="globe-stat-number" data-target="15">0</span>
+          </div>
+          <div class="globe-stat-label">Dias p/ publicar</div>
         </div>
       </div>
 
-      <!-- RIGHT: Globe Canvas -->
-      <div class="globe-visual">
-        <div class="globe-atm-ring"></div>
-        <canvas id="ylaGlobe" width="960" height="960"></canvas>
+      <div class="globe-country-tags">
+        <span class="g-tag">🇧🇷 Brasil</span>
+        <span class="g-tag g-tag-soon">🇦🇷 Argentina · Em breve</span>
+        <span class="g-tag g-tag-soon">🇨🇴 Colômbia · Em breve</span>
+        <span class="g-tag g-tag-soon">🇲🇽 México · Em breve</span>
       </div>
-
     </div>
   </div>
 </section>
