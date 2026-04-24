@@ -109,6 +109,18 @@ function normalizarArea(area) {
   return area ? area.split('/')[0].trim().toLowerCase() : '';
 }
 
+// ─── Hero card float — atualiza com pesquisa mais recente ────────
+function updateHeroCardFloat(p) {
+  const card1 = document.querySelector('.card-float-1');
+  if (!card1 || !p) return;
+  const tag   = card1.querySelector('.hcf-tag');
+  const title = card1.querySelector('.hcf-title');
+  const auth  = card1.querySelector('.hcf-author');
+  if (tag)   tag.textContent   = p.area  || 'Pesquisa';
+  if (title) title.textContent = p.titulo || '';
+  if (auth)  auth.textContent  = (p.nome || '') + ' · ' + (p.pais || '');
+}
+
 // ─── HOME — carrega os 4 artigos mais recentes ────────────────
 const articlesGrid = document.getElementById('articlesGrid');
 if (articlesGrid && window.YLA) {
@@ -157,6 +169,7 @@ if (articlesGrid && window.YLA) {
     }).join('');
 
     articlesGrid.querySelectorAll('.article-card').forEach(el => observer.observe(el));
+    if (recentes[0]) updateHeroCardFloat(recentes[0]);
   })();
 }
 
@@ -439,265 +452,146 @@ if (contatoForm && window.YLA) {
 
 // ─── GLOBE SECTION ────────────────────────────────────────────
 (function () {
+
+  // ── Projeção ortográfica precisa ─────────────────────────────
+  // Converte [longitude, latitude] em coordenadas de tela
+  // lambda0, phi0 = centro da projeção em radianos
+  function makeProjection(W, H, R, lambda0, phi0) {
+    return function project(lon, lat) {
+      const l = lon * Math.PI / 180;
+      const p = lat * Math.PI / 180;
+      // dot product para visibilidade
+      const cosc = Math.sin(phi0) * Math.sin(p) +
+                   Math.cos(phi0) * Math.cos(p) * Math.cos(l - lambda0);
+      if (cosc < 0) return null; // ponto no lado de trás
+      const x = R * Math.cos(p) * Math.sin(l - lambda0);
+      const y = R * (Math.cos(phi0) * Math.sin(p) -
+                     Math.sin(phi0) * Math.cos(p) * Math.cos(l - lambda0));
+      return { sx: W / 2 + x, sy: H / 2 - y, z: cosc };
+    };
+  }
+
+  // ── Desenha um anel de grande círculo (graticule) ────────────
+  function drawGraticule(ctx, project, step) {
+    ctx.beginPath();
+    // paralelos
+    for (let lat = -80; lat <= 80; lat += step) {
+      let started = false;
+      for (let lon = -180; lon <= 180; lon += 1) {
+        const p = project(lon, lat);
+        if (!p) { started = false; continue; }
+        if (!started) { ctx.moveTo(p.sx, p.sy); started = true; }
+        else ctx.lineTo(p.sx, p.sy);
+      }
+    }
+    // meridianos
+    for (let lon = -180; lon < 180; lon += step) {
+      let started = false;
+      for (let lat = -90; lat <= 90; lat += 1) {
+        const p = project(lon, lat);
+        if (!p) { started = false; continue; }
+        if (!started) { ctx.moveTo(p.sx, p.sy); started = true; }
+        else ctx.lineTo(p.sx, p.sy);
+      }
+    }
+    ctx.stroke();
+  }
+
+  // ── Desenha um polígono GeoJSON (rings de [lon, lat]) ────────
+  function drawPolygon(ctx, project, rings) {
+    ctx.beginPath();
+    for (const ring of rings) {
+      let started = false;
+      let prevVisible = false;
+      for (let i = 0; i < ring.length; i++) {
+        const [lon, lat] = ring[i];
+        const p = project(lon, lat);
+        if (!p) {
+          prevVisible = false;
+          continue;
+        }
+        if (!started || !prevVisible) {
+          ctx.moveTo(p.sx, p.sy);
+          started = true;
+        } else {
+          ctx.lineTo(p.sx, p.sy);
+        }
+        prevVisible = true;
+      }
+    }
+  }
+
   function initYLAGlobe() {
     const canvas = document.getElementById('ylaGlobe');
     if (!canvas) return;
 
     const ctx = canvas.getContext('2d');
 
-    // Canvas interno 960×960, exibido em ~480px via CSS
     const W = 960, H = 960;
-    const cx = W / 2, cy = H / 2;
     const R  = W * 0.42;
 
-    let rotY      = 55;   // centrado na América do Sul
-    let rotX      = 5;
+    // Centro: América do Sul
+    let lon0 = -55;  // longitude central
+    let lat0 =  -8;  // latitude central
+
     let autoSpin  = true;
     let isDragging = false;
     let lastMx = 0, lastMy = 0;
     let animId;
+    let geoData = null; // dados GeoJSON carregados
 
-    // Projeção esférica
-    function project(lat, lon) {
-      const latR = (lat - rotX) * Math.PI / 180;
-      const lonR = (lon + rotY) * Math.PI / 180;
-      const x = Math.cos(latR) * Math.sin(lonR);
-      const y = -Math.sin(latR);
-      const z = Math.cos(latR) * Math.cos(lonR);
-      return { sx: cx + R * x, sy: cy + R * y, z };
+    // Carrega dados geográficos reais (Natural Earth via CDN)
+    async function loadGeoData() {
+      try {
+        // TopoJSON Natural Earth 110m countries
+        const topoUrl = 'https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json';
+        const res = await fetch(topoUrl);
+        const topo = await res.json();
+
+        // Converte TopoJSON → GeoJSON usando topojson-client via CDN
+        // O topojson está disponível via script inline depois
+        if (window.topojson) {
+          const countries = window.topojson.feature(topo, topo.objects.countries);
+          geoData = countries;
+        } else {
+          // fallback: tenta carregar topojson dinamicamente
+          await loadScript('https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js');
+          const countries = window.topojson.feature(topo, topo.objects.countries);
+          geoData = countries;
+        }
+      } catch (e) {
+        console.warn('Globe: falha ao carregar GeoJSON, usando fallback.', e);
+        geoData = null;
+      }
     }
 
-    // ── Continentes ──────────────────────────────────────────
-    // fill  = cor de preenchimento
-    // line  = cor do contorno
-    // w     = espessura do contorno
-    // pts   = [[lat, lon], ...]
-    const CONTINENTS = [
+    function loadScript(src) {
+      return new Promise((resolve, reject) => {
+        const s = document.createElement('script');
+        s.src = src;
+        s.onload  = resolve;
+        s.onerror = reject;
+        document.head.appendChild(s);
+      });
+    }
 
-      // América do Sul (destaque — YLA)
-      { id:'SA', fill:'rgba(96,165,250,0.30)', line:'rgba(147,197,253,0.85)', w:1.6,
-        pts:[
-          [12,-73],[12,-70],[11,-64],[10,-62],[11,-61],[10,-60],[8,-60],
-          [7,-57],[6,-54],[4,-53],[2,-52],[0,-51],
-          [-2,-44],[-5,-35],[-8,-35],[-10,-37],[-13,-38],
-          [-16,-39],[-20,-40],[-22,-43],[-23,-43],
-          [-25,-48],[-28,-49],[-30,-51],[-32,-52],
-          [-34,-53],[-35,-56],[-38,-57],[-42,-63],
-          [-44,-65],[-47,-66],[-50,-68],[-54,-68],
-          [-55,-68],[-55,-67],[-54,-64],
-          [-56,-67],[-54,-70],[-50,-74],[-46,-74],
-          [-42,-73],[-38,-71],[-33,-71],[-28,-71],
-          [-23,-70],[-18,-70],[-15,-75],[-12,-77],
-          [-8,-79],[-4,-81],[-2,-80],[0,-78],
-          [4,-77],[8,-77],[10,-75],[12,-73]
-        ]
-      },
+    // IDs numéricos ISO 3166 para países da América Latina (destaque)
+    const LATAM_IDS = new Set([
+      '032','068','076','152','170','188','192','214','218','222',
+      '320','340','484','558','591','600','604','630','740','858','862'
+    ]);
 
-      // América do Norte (EUA + México + parte)
-      { id:'NA', fill:'rgba(96,165,250,0.20)', line:'rgba(147,197,253,0.60)', w:1.2,
-        pts:[
-          [25,-80],[29,-81],[32,-81],[35,-76],[37,-76],[40,-74],
-          [41,-72],[42,-70],[44,-66],[47,-69],[47,-53],
-          [46,-60],[45,-73],[44,-76],[43,-79],[42,-83],
-          [42,-87],[44,-84],[46,-84],[47,-88],[47,-91],
-          [48,-95],[49,-100],[49,-110],[49,-123],
-          [48,-124],[40,-124],[37,-122],[34,-120],[32,-117],
-          [30,-115],[27,-110],[23,-107],[20,-105],
-          [15,-92],[14,-90],[14,-88],[15,-87],[16,-86],
-          [21,-87],[22,-97],[25,-97],[28,-97],
-          [29,-95],[30,-89],[29,-89],[29,-82],[25,-80]
-        ]
-      },
-
-      // Canadá
-      { id:'CN', fill:'rgba(96,165,250,0.16)', line:'rgba(147,197,253,0.45)', w:1.0,
-        pts:[
-          [49,-123],[50,-127],[54,-130],[58,-137],[60,-140],
-          [65,-141],[68,-141],[70,-130],[72,-120],[72,-100],
-          [70,-86],[68,-82],[65,-84],[62,-74],[60,-70],
-          [58,-65],[55,-60],[52,-56],[50,-56],[47,-53],
-          [46,-60],[47,-70],[45,-73],[44,-76],[46,-84],
-          [48,-95],[49,-100],[49,-123]
-        ]
-      },
-
-      // Groenlândia
-      { id:'GL', fill:'rgba(200,220,255,0.14)', line:'rgba(147,197,253,0.38)', w:0.8,
-        pts:[
-          [76,-72],[72,-80],[70,-86],[68,-82],[65,-84],[63,-50],
-          [65,-40],[70,-24],[72,-22],[74,-18],[76,-22],
-          [78,-30],[76,-72]
-        ]
-      },
-
-      // Europa
-      { id:'EU', fill:'rgba(96,165,250,0.22)', line:'rgba(147,197,253,0.65)', w:1.1,
-        pts:[
-          [36,-5],[38,-9],[43,-9],[44,-1],[44,8],[44,12],
-          [42,14],[44,12],[46,13],[47,17],[48,20],
-          [46,28],[44,30],[47,24],[50,22],[50,14],
-          [54,18],[57,22],[58,26],[60,25],[58,12],
-          [57,8],[55,9],[54,8],[52,5],[51,3],[50,2],
-          [49,2],[48,-2],[46,-1],[43,-2],[43,-9],[36,-5]
-        ]
-      },
-
-      // Escandinávia
-      { id:'SC', fill:'rgba(96,165,250,0.18)', line:'rgba(147,197,253,0.52)', w:0.9,
-        pts:[
-          [57,8],[58,8],[59,5],[60,5],[62,5],[64,14],
-          [65,14],[67,14],[68,15],[69,18],[70,20],
-          [71,25],[70,28],[68,27],[66,24],[65,22],
-          [63,18],[60,22],[59,18],[58,12],[57,8]
-        ]
-      },
-
-      // Rússia
-      { id:'RU', fill:'rgba(96,165,250,0.16)', line:'rgba(147,197,253,0.42)', w:1.0,
-        pts:[
-          [50,30],[52,36],[55,45],[60,60],[64,60],[65,75],
-          [67,95],[68,110],[68,130],[65,140],[60,160],
-          [55,160],[52,142],[50,130],[50,120],[50,105],
-          [50,82],[50,60],[50,50],[50,40],[50,30]
-        ]
-      },
-
-      // África
-      { id:'AF', fill:'rgba(96,165,250,0.22)', line:'rgba(147,197,253,0.65)', w:1.2,
-        pts:[
-          [37,10],[36,24],[32,25],[30,33],[25,36],[22,37],
-          [15,42],[10,44],[2,42],[0,42],[-4,40],
-          [-8,38],[-10,38],[-16,36],[-22,36],
-          [-26,33],[-34,26],[-34,18],[-28,17],
-          [-22,14],[-16,0],[-14,-17],[-6,-12],
-          [-4,-10],[-4,-14],[-6,0],[0,4],
-          [4,8],[8,2],[10,0],[8,-10],[14,-17],
-          [22,14],[22,37],[30,33],[36,24],[37,10]
-        ]
-      },
-
-      // Ásia (Oriente Médio + Índia + China)
-      { id:'AS', fill:'rgba(96,165,250,0.18)', line:'rgba(147,197,253,0.52)', w:1.0,
-        pts:[
-          [38,36],[36,36],[32,36],[30,42],[28,48],[22,56],
-          [22,60],[22,58],[24,54],[26,50],[28,46],
-          [30,42],[32,36],[34,36],[36,38],[38,38],
-          [38,44],[40,48],[38,50],[36,60],[36,72],
-          [30,68],[26,64],[22,68],[20,72],[16,74],
-          [12,78],[8,77],[8,80],[10,78],[14,78],
-          [18,84],[22,90],[24,90],[26,88],[28,78],
-          [30,74],[34,74],[36,72],[38,66],[40,60],
-          [42,50],[44,50],[46,52],[48,58],[50,60],
-          [50,82],[46,82],[42,78],[38,68],[36,60],
-          [38,50],[40,50],[42,50],[44,88],[46,88],
-          [44,100],[40,106],[34,108],[30,110],
-          [26,116],[22,120],[20,106],[18,102],
-          [20,100],[22,98],[24,96],[28,96],
-          [30,96],[32,92],[34,88],[36,80],
-          [38,80],[40,80],[42,78],[50,82],[50,60],
-          [50,50],[50,40],[50,30],[54,30],
-          [56,28],[58,26],[60,25],[50,30],[38,36]
-        ]
-      },
-
-      // Japão
-      { id:'JP', fill:'rgba(96,165,250,0.18)', line:'rgba(147,197,253,0.50)', w:0.8,
-        pts:[
-          [31,130],[33,131],[34,133],[36,136],[38,141],
-          [40,141],[42,140],[43,141],[44,145],[42,143],
-          [40,140],[38,140],[36,136],[34,133],[31,130]
-        ]
-      },
-
-      // Austrália
-      { id:'AU', fill:'rgba(96,165,250,0.20)', line:'rgba(147,197,253,0.58)', w:1.1,
-        pts:[
-          [-14,126],[-12,133],[-12,136],[-12,141],
-          [-14,144],[-16,145],[-19,147],[-22,150],
-          [-25,152],[-28,153],[-31,153],[-34,151],
-          [-37,150],[-39,147],[-38,141],[-36,139],
-          [-34,136],[-32,133],[-31,115],[-22,114],
-          [-18,122],[-16,124],[-14,126]
-        ]
-      },
-
-      // Madagascar
-      { id:'MG', fill:'rgba(96,165,250,0.16)', line:'rgba(147,197,253,0.45)', w:0.8,
-        pts:[
-          [-13,49],[-15,50],[-18,44],[-22,44],
-          [-24,44],[-25,46],[-24,48],[-21,48],
-          [-18,48],[-15,50],[-13,49]
-        ]
-      },
-
-      // Nova Zelândia (ilha norte)
-      { id:'NZ', fill:'rgba(96,165,250,0.15)', line:'rgba(147,197,253,0.42)', w:0.7,
-        pts:[
-          [-34,172],[-36,174],[-38,176],[-41,175],
-          [-40,172],[-36,172],[-34,172]
-        ]
-      },
-    ];
-
-    // ── Marcadores (apenas Brasil por enquanto) ───────────────
     const MARKERS = [
-      { lat: -15.8, lon: -47.9, label: 'Brasil' },
+      { lon: -47.9, lat: -15.8, label: 'Brasil' },
     ];
-
-    // ── Desenha um continente (fill + stroke) ────────────────
-    function drawContinent(cont) {
-      const pts = cont.pts;
-      if (!pts || pts.length < 3) return;
-
-      // Projeta todos os pontos
-      const projected = pts.map(([lat, lon]) => ({ ...project(lat, lon), lat, lon }));
-
-      // Conta quantos são visíveis
-      const visCount = projected.filter(p => p.z > 0).length;
-      if (visCount < 2) return;
-
-      // ── Fill ──
-      ctx.beginPath();
-      let started = false;
-      for (const p of projected) {
-        if (!started) {
-          ctx.moveTo(p.sx, p.sy);
-          started = true;
-        } else {
-          ctx.lineTo(p.sx, p.sy);
-        }
-      }
-      ctx.closePath();
-      ctx.fillStyle = cont.fill;
-      ctx.fill();
-
-      // ── Stroke (apenas segmentos visíveis) ──
-      ctx.strokeStyle = cont.line;
-      ctx.lineWidth   = cont.w;
-      ctx.lineJoin    = 'round';
-      ctx.lineCap     = 'round';
-
-      ctx.beginPath();
-      let inPath = false;
-      for (let i = 0; i < projected.length; i++) {
-        const p = projected[i];
-        if (p.z > 0) {
-          if (!inPath) { ctx.moveTo(p.sx, p.sy); inPath = true; }
-          else ctx.lineTo(p.sx, p.sy);
-        } else {
-          if (inPath) { ctx.stroke(); ctx.beginPath(); inPath = false; }
-        }
-      }
-      // fecha para o primeiro ponto visível
-      if (inPath) {
-        const fp = projected.find(p => p.z > 0);
-        if (fp) ctx.lineTo(fp.sx, fp.sy);
-        ctx.stroke();
-      }
-    }
 
     // ── Loop principal ────────────────────────────────────────
     function draw(ts) {
+      const cx = W / 2, cy = H / 2;
+      const lambda0 = lon0 * Math.PI / 180;
+      const phi0    = lat0 * Math.PI / 180;
+      const project = makeProjection(W, H, R, lambda0, phi0);
+
       ctx.clearRect(0, 0, W, H);
 
       // Atmosfera
@@ -722,48 +616,60 @@ if (contatoForm && window.YLA) {
       // Grade lat/lon
       ctx.lineWidth   = 0.4;
       ctx.strokeStyle = 'rgba(255,255,255,0.04)';
-      for (let lat = -80; lat <= 80; lat += 20) {
-        ctx.beginPath(); let s = false;
-        for (let lon = -180; lon <= 180; lon += 2) {
-          const p = project(lat, lon);
-          if (p.z > 0) { if (!s) { ctx.moveTo(p.sx, p.sy); s = true; } else ctx.lineTo(p.sx, p.sy); } else s = false;
-        }
-        ctx.stroke();
-      }
-      for (let lon = -180; lon < 180; lon += 20) {
-        ctx.beginPath(); let s = false;
-        for (let lat = -90; lat <= 90; lat += 2) {
-          const p = project(lat, lon);
-          if (p.z > 0) { if (!s) { ctx.moveTo(p.sx, p.sy); s = true; } else ctx.lineTo(p.sx, p.sy); } else s = false;
-        }
-        ctx.stroke();
-      }
+      drawGraticule(ctx, project, 20);
 
-      // Continentes
-      for (const cont of CONTINENTS) drawContinent(cont);
+      // Países (GeoJSON real)
+      if (geoData) {
+        for (const feature of geoData.features) {
+          const id  = String(feature.id).padStart(3, '0');
+          const isLatam = LATAM_IDS.has(id);
+          const geom = feature.geometry;
+          if (!geom) continue;
 
-      // Destaque extra na América do Sul
-      const saData = CONTINENTS.find(c => c.id === 'SA');
-      if (saData) {
-        ctx.save();
-        ctx.shadowColor = 'rgba(96,165,250,0.5)';
-        ctx.shadowBlur  = 20;
-        ctx.strokeStyle = 'rgba(147,197,253,0.95)';
-        ctx.lineWidth   = 2.2;
-        ctx.lineJoin    = 'round';
-        ctx.lineCap     = 'round';
-        const projected = saData.pts.map(([lat, lon]) => project(lat, lon));
-        ctx.beginPath();
-        let inPath = false;
-        for (const p of projected) {
-          if (p.z > 0) {
-            if (!inPath) { ctx.moveTo(p.sx, p.sy); inPath = true; }
-            else ctx.lineTo(p.sx, p.sy);
-          } else {
-            if (inPath) { ctx.stroke(); ctx.beginPath(); inPath = false; }
+          const polys = geom.type === 'Polygon'
+            ? [geom.coordinates]
+            : geom.type === 'MultiPolygon'
+            ? geom.coordinates
+            : [];
+
+          for (const poly of polys) {
+            // Fill
+            ctx.beginPath();
+            drawPolygon(ctx, project, poly);
+            ctx.fillStyle = isLatam ? 'rgba(96,165,250,0.32)' : 'rgba(96,165,250,0.14)';
+            ctx.fill();
+
+            // Stroke
+            ctx.beginPath();
+            drawPolygon(ctx, project, poly);
+            ctx.strokeStyle = isLatam ? 'rgba(147,197,253,0.80)' : 'rgba(147,197,253,0.35)';
+            ctx.lineWidth   = isLatam ? 1.4 : 0.7;
+            ctx.lineJoin    = 'round';
+            ctx.stroke();
           }
         }
-        if (inPath) ctx.stroke();
+
+        // Destaque extra América do Sul (glow)
+        ctx.save();
+        ctx.shadowColor = 'rgba(96,165,250,0.55)';
+        ctx.shadowBlur  = 18;
+        for (const feature of geoData.features) {
+          const id = String(feature.id).padStart(3, '0');
+          if (!LATAM_IDS.has(id)) continue;
+          const geom = feature.geometry;
+          if (!geom) continue;
+          const polys = geom.type === 'Polygon'
+            ? [geom.coordinates]
+            : geom.type === 'MultiPolygon'
+            ? geom.coordinates : [];
+          for (const poly of polys) {
+            ctx.beginPath();
+            drawPolygon(ctx, project, poly);
+            ctx.strokeStyle = 'rgba(147,197,253,0.95)';
+            ctx.lineWidth   = 2.0;
+            ctx.stroke();
+          }
+        }
         ctx.restore();
       }
 
@@ -784,28 +690,25 @@ if (contatoForm && window.YLA) {
       const t = ts / 1000;
 
       for (let i = 0; i < MARKERS.length; i++) {
-        const { lat, lon, label } = MARKERS[i];
-        const p = project(lat, lon);
-        if (p.z < 0.05) continue;
+        const { lon, lat, label } = MARKERS[i];
+        const p = project(lon, lat);
+        if (!p || p.z < 0.05) continue;
 
         const vis    = Math.min(1, (p.z - 0.05) / 0.3);
         const phase  = ((t * 0.7 + i * 0.28) % 1);
         const maxRip = R * 0.058;
 
-        // Ripple 1
         ctx.beginPath();
         ctx.arc(p.sx, p.sy, maxRip * phase, 0, Math.PI * 2);
         ctx.fillStyle = `rgba(249,115,22,${(1 - phase) * 0.5 * vis})`;
         ctx.fill();
 
-        // Ripple 2
         const phase2 = ((t * 0.7 + i * 0.28 + 0.45) % 1);
         ctx.beginPath();
         ctx.arc(p.sx, p.sy, maxRip * phase2, 0, Math.PI * 2);
         ctx.fillStyle = `rgba(249,115,22,${(1 - phase2) * 0.3 * vis})`;
         ctx.fill();
 
-        // Halo
         const haloR = R * 0.040;
         const halo  = ctx.createRadialGradient(p.sx, p.sy, 0, p.sx, p.sy, haloR);
         halo.addColorStop(0, `rgba(251,146,60,${0.42 * vis})`);
@@ -813,7 +716,6 @@ if (contatoForm && window.YLA) {
         ctx.beginPath(); ctx.arc(p.sx, p.sy, haloR, 0, Math.PI * 2);
         ctx.fillStyle = halo; ctx.fill();
 
-        // Ponto central
         const dotR = R * 0.017;
         const dot  = ctx.createRadialGradient(p.sx - dotR * 0.3, p.sy - dotR * 0.3, 0, p.sx, p.sy, dotR);
         dot.addColorStop(0, `rgba(255,220,170,${vis})`);
@@ -821,7 +723,6 @@ if (contatoForm && window.YLA) {
         ctx.beginPath(); ctx.arc(p.sx, p.sy, dotR, 0, Math.PI * 2);
         ctx.fillStyle = dot; ctx.fill();
 
-        // Label
         if (p.z > 0.25) {
           ctx.save();
           ctx.font      = `700 ${Math.round(R * 0.030)}px 'DM Sans', sans-serif`;
@@ -834,42 +735,62 @@ if (contatoForm && window.YLA) {
         }
       }
 
-      if (autoSpin) rotY -= 0.025;
+      if (autoSpin) lon0 -= 0.025;
       animId = requestAnimationFrame(draw);
     }
 
+    // Inicia: carrega geo e começa animação
+    loadGeoData().then(() => {
+      if (animId) cancelAnimationFrame(animId);
+      animId = requestAnimationFrame(draw);
+    });
+    // Começa a renderizar imediatamente (mesmo sem geo, mostra o globo)
     animId = requestAnimationFrame(draw);
 
-    // Drag
+    // ── Drag (mouse) ─────────────────────────────────────────
     canvas.addEventListener('mousedown', e => {
       isDragging = true; autoSpin = false;
       lastMx = e.clientX; lastMy = e.clientY;
+      canvas.style.cursor = 'grabbing';
     });
     window.addEventListener('mousemove', e => {
       if (!isDragging) return;
-      rotY -= (e.clientX - lastMx) * 0.35;
-      rotX  = Math.max(-60, Math.min(60, rotX + (e.clientY - lastMy) * 0.25));
+      const dx = e.clientX - lastMx;
+      const dy = e.clientY - lastMy;
+      // sensibilidade baseada no raio CSS (canvas é 960px mas exibido em ~480px)
+      const scale = (canvas.getBoundingClientRect().width / W) * (180 / (Math.PI * R));
+      lon0 -= dx / (canvas.getBoundingClientRect().width) * 180;
+      lat0  = Math.max(-80, Math.min(80, lat0 + dy / (canvas.getBoundingClientRect().height) * 180));
       lastMx = e.clientX; lastMy = e.clientY;
     });
     window.addEventListener('mouseup', () => {
-      if (isDragging) { isDragging = false; setTimeout(() => { autoSpin = true; }, 2500); }
+      if (isDragging) {
+        isDragging = false;
+        canvas.style.cursor = 'grab';
+        setTimeout(() => { autoSpin = true; }, 2500);
+      }
     });
+    canvas.style.cursor = 'grab';
 
-    // Touch
+    // ── Drag (touch) ─────────────────────────────────────────
     canvas.addEventListener('touchstart', e => {
       autoSpin = false;
       lastMx = e.touches[0].clientX; lastMy = e.touches[0].clientY;
     }, { passive: true });
     canvas.addEventListener('touchmove', e => {
       e.preventDefault();
-      rotY -= (e.touches[0].clientX - lastMx) * 0.35;
-      rotX  = Math.max(-60, Math.min(60, rotX + (e.touches[0].clientY - lastMy) * 0.25));
+      const dx = e.touches[0].clientX - lastMx;
+      const dy = e.touches[0].clientY - lastMy;
+      lon0 -= dx / (canvas.getBoundingClientRect().width) * 180;
+      lat0  = Math.max(-80, Math.min(80, lat0 + dy / (canvas.getBoundingClientRect().height) * 180));
       lastMx = e.touches[0].clientX; lastMy = e.touches[0].clientY;
     }, { passive: false });
     canvas.addEventListener('touchend', () => {
       setTimeout(() => { autoSpin = true; }, 2500);
     });
   }
+
+
 
   // Contadores animados
   function initGlobeStats() {
