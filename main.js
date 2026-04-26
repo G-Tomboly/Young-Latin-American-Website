@@ -325,6 +325,7 @@ if (articleBody && window.YLA) {
   } else {
     (async () => {
       const p = await window.YLA.buscarPesquisa(id);
+      window.__artigoAtual = p || null;   // expõe para artigo.html exibir imagem
 
       if (!p) {
         articleBody.innerHTML = `
@@ -374,6 +375,8 @@ if (articleBody && window.YLA) {
 }
 
 // ─── FORMULÁRIO DE ENVIO (enviar.html) ───────────────────────
+// O handler de submit real (com upload de imagem) está inline em enviar.html.
+// Este bloco cuida apenas da validação visual dos campos obrigatórios.
 const submitForm = document.getElementById('submitForm');
 if (submitForm && window.YLA && document.getElementById('artigo')) {
 
@@ -391,49 +394,8 @@ if (submitForm && window.YLA && document.getElementById('artigo')) {
     return valido;
   }
 
-  submitForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    if (!validarForm(submitForm)) return;
-
-    const btn = submitForm.querySelector('.btn-form-submit');
-    btn.textContent = 'Enviando...';
-    btn.disabled    = true;
-
-    const result = await window.YLA.enviarPesquisa({
-      nome:         submitForm.querySelector('#nome').value.trim(),
-      email:        submitForm.querySelector('#email').value.trim(),
-      idade:        submitForm.querySelector('#idade').value,
-      pais:         submitForm.querySelector('#pais').value,
-      escola:       submitForm.querySelector('#escola').value.trim(),
-      orientador:   submitForm.querySelector('#orientador').value.trim(),
-      coautores:    submitForm.querySelector('#coautores').value.trim(),
-      titulo:       submitForm.querySelector('#titulo').value.trim(),
-      area:         submitForm.querySelector('#area').value,
-      idioma:       submitForm.querySelector('#idioma').value,
-      resumo:       submitForm.querySelector('#resumo').value.trim(),
-      keywords:     submitForm.querySelector('#keywords').value.trim(),
-      artigo_texto: submitForm.querySelector('#artigo').value.trim(),
-    });
-
-    if (result.ok) {
-      btn.textContent      = '✓ Enviado com sucesso!';
-      btn.style.background = '#22c55e';
-      submitForm.reset();
-      setTimeout(() => {
-        btn.textContent      = 'Enviar pesquisa para revisão →';
-        btn.style.background = '';
-        btn.disabled         = false;
-      }, 4000);
-    } else {
-      btn.textContent      = '✗ Erro ao enviar. Tente novamente.';
-      btn.style.background = '#ef4444';
-      btn.disabled         = false;
-      setTimeout(() => {
-        btn.textContent      = 'Enviar pesquisa para revisão →';
-        btn.style.background = '';
-      }, 3000);
-    }
-  });
+  // Expõe validarForm para o handler inline de enviar.html poder reutilizá-la
+  window.__ylaValidarForm = validarForm;
 }
 
 // ─── FORMULÁRIO DE CONTATO (contato.html) ────────────────────

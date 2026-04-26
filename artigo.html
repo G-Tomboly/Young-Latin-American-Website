@@ -50,6 +50,10 @@
 <div class="article-layout">
   <main class="article-content">
 
+    <div class="article-cover" id="articleCover" style="display:none;">
+      <img id="artImagem" src="" alt="Imagem da pesquisa" class="article-cover-img">
+    </div>
+
     <div class="article-abstract">
       <div class="abstract-label">Resumo</div>
       <p class="abstract-text" id="artResumo">Carregando...</p>
@@ -134,5 +138,42 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="supabase.js"></script>
 <script src="main.js"></script>
+<script>
+// ─── Exibe imagem da pesquisa (se existir) — artigo.html ─────────────────────
+// O main.js já carrega os dados da pesquisa; aguardamos o evento customizado
+// 'yla:artigo-carregado' que deve ser disparado pelo main.js após preencher os
+// campos, OU fazemos fallback: observamos o elemento #artTitulo sair de
+// "Carregando..." para detectar quando o artigo foi carregado.
+(function () {
+  function exibirImagemSeExistir() {
+    // Tenta ler imagem_url do dataset do body (main.js pode setar) ou do YLA cache
+    const cover   = document.getElementById('articleCover');
+    const imgEl   = document.getElementById('artImagem');
+    if (!cover || !imgEl) return;
+
+    // Verifica se main.js expôs o objeto do artigo em window.__artigoAtual
+    const art = window.__artigoAtual;
+    if (art && art.imagem_url) {
+      imgEl.src             = art.imagem_url;
+      imgEl.alt             = 'Imagem da pesquisa: ' + (art.titulo || '');
+      cover.style.display   = 'block';
+    }
+  }
+
+  // Escuta evento customizado que o main.js pode disparar
+  document.addEventListener('yla:artigo-carregado', exibirImagemSeExistir);
+
+  // Fallback: polling leve para quando main.js não dispara o evento
+  let tentativas = 0;
+  const intervalo = setInterval(() => {
+    tentativas++;
+    if (window.__artigoAtual) {
+      exibirImagemSeExistir();
+      clearInterval(intervalo);
+    }
+    if (tentativas > 40) clearInterval(intervalo); // desiste após 4s
+  }, 100);
+})();
+</script>
 </body>
 </html>

@@ -161,6 +161,31 @@
           <p class="form-hint">Você também pode enviar um arquivo PDF por email para <strong>publicacoes@younglatinamerican.org</strong> após o envio do formulário.</p>
         </div>
 
+        <div class="form-row">
+          <label class="form-label" for="imagemInput">
+            Imagem da pesquisa
+            <span style="color:var(--gray-400);font-weight:400;">(opcional)</span>
+          </label>
+          <div class="upload-drop-area" id="uploadDropArea">
+            <input type="file" id="imagemInput" name="imagem" accept="image/jpeg,image/png,image/webp" class="upload-file-input">
+            <div class="upload-placeholder" id="uploadPlaceholder">
+              <div class="upload-icon">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              </div>
+              <p class="upload-primary-text">Arraste uma imagem aqui ou <span class="upload-browse-link">clique para selecionar</span></p>
+              <p class="upload-secondary-text">JPG, PNG ou WebP · máx. 5 MB</p>
+            </div>
+            <div class="upload-preview" id="uploadPreview" style="display:none;">
+              <img id="previewImg" src="" alt="Preview da imagem">
+              <button type="button" class="upload-remove-btn" id="uploadRemoveBtn" title="Remover imagem">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                Remover imagem
+              </button>
+            </div>
+          </div>
+          <p class="form-hint">Uma foto do experimento, gráfico ou resultado torna sua pesquisa mais atrativa na lista de publicações.</p>
+        </div>
+
         <hr class="form-divider">
 
         <!-- TERMS -->
@@ -222,5 +247,163 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="supabase.js"></script>
 <script src="main.js"></script>
+<script>
+// ─── Upload de Imagem — enviar.html ──────────────────────────────────────────
+(function () {
+  const dropArea    = document.getElementById('uploadDropArea');
+  const fileInput   = document.getElementById('imagemInput');
+  const placeholder = document.getElementById('uploadPlaceholder');
+  const preview     = document.getElementById('uploadPreview');
+  const previewImg  = document.getElementById('previewImg');
+  const removeBtn   = document.getElementById('uploadRemoveBtn');
+
+  if (!dropArea) return;
+
+  // ── Mostrar preview após seleção ──────────────────────────────────────────
+  function mostrarPreview(file) {
+    if (!file || !file.type.startsWith('image/')) return;
+    if (file.size > 5 * 1024 * 1024) {
+      alert('A imagem deve ter no máximo 5 MB.');
+      fileInput.value = '';
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      previewImg.src = e.target.result;
+      placeholder.style.display = 'none';
+      preview.style.display     = 'block';
+      dropArea.classList.add('has-file');
+      // Remove pointer-events do input nativo p/ não interceptar o botão de remover
+      fileInput.style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+  }
+
+  fileInput.addEventListener('change', () => {
+    if (fileInput.files[0]) mostrarPreview(fileInput.files[0]);
+  });
+
+  // ── Remover imagem ────────────────────────────────────────────────────────
+  removeBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    fileInput.value            = '';
+    previewImg.src             = '';
+    preview.style.display      = 'none';
+    placeholder.style.display  = 'flex';
+    fileInput.style.display    = '';
+    dropArea.classList.remove('has-file');
+  });
+
+  // ── Drag & Drop ───────────────────────────────────────────────────────────
+  ['dragenter', 'dragover'].forEach(ev => {
+    dropArea.addEventListener(ev, (e) => {
+      e.preventDefault();
+      dropArea.classList.add('drag-over');
+    });
+  });
+
+  ['dragleave', 'drop'].forEach(ev => {
+    dropArea.addEventListener(ev, (e) => {
+      e.preventDefault();
+      dropArea.classList.remove('drag-over');
+    });
+  });
+
+  dropArea.addEventListener('drop', (e) => {
+    const file = e.dataTransfer?.files?.[0];
+    if (file) {
+      // Atribui ao input para que o formulário o capture
+      const dt = new DataTransfer();
+      dt.items.add(file);
+      fileInput.files = dt.files;
+      mostrarPreview(file);
+    }
+  });
+
+  // ── Hook no formulário: faz upload antes de salvar no banco ──────────────
+  const form = document.getElementById('submitForm');
+  if (form) {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      // Validação visual (definida no main.js e exposta em window.__ylaValidarForm)
+      if (window.__ylaValidarForm && !window.__ylaValidarForm(form)) return;
+
+      const submitBtn = form.querySelector('.btn-form-submit');
+      const textoOriginal = submitBtn ? submitBtn.textContent : '';
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Enviando…';
+      }
+
+      // Coleta campos do formulário
+      const payload = {
+        nome:         form.nome.value.trim(),
+        email:        form.email.value.trim(),
+        idade:        form.idade.value,
+        pais:         form.pais.value,
+        escola:       form.escola.value.trim(),
+        orientador:   form.orientador.value.trim(),
+        coautores:    form.coautores.value.trim(),
+        titulo:       form.titulo.value.trim(),
+        area:         form.area.value,
+        idioma:       form.idioma.value,
+        resumo:       form.resumo.value.trim(),
+        keywords:     form.keywords.value.trim(),
+        artigo_texto: form.artigo.value.trim(),
+        imagem_url:   null,
+      };
+
+      // Upload da imagem (se houver)
+      const imgFile = fileInput.files?.[0];
+      if (imgFile) {
+        dropArea.classList.add('uploading');
+        const resultado = await YLA.uploadImagem(imgFile);
+        dropArea.classList.remove('uploading');
+
+        if (!resultado.ok) {
+          alert('Erro ao enviar imagem: ' + resultado.error + '\nA pesquisa NÃO foi enviada. Tente novamente.');
+          if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = textoOriginal; }
+          return;
+        }
+        payload.imagem_url = resultado.url;
+      }
+
+      // Salva no banco
+      const res = await YLA.enviarPesquisa(payload);
+
+      if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = textoOriginal; }
+
+      if (res.ok) {
+        form.reset();
+        // Limpa preview
+        preview.style.display     = 'none';
+        placeholder.style.display = 'flex';
+        fileInput.style.display   = '';
+        dropArea.classList.remove('has-file');
+        if (submitBtn) {
+          submitBtn.textContent      = '✓ Enviado com sucesso!';
+          submitBtn.style.background = '#22c55e';
+          setTimeout(() => {
+            submitBtn.textContent      = 'Enviar pesquisa para revisão →';
+            submitBtn.style.background = '';
+            submitBtn.disabled         = false;
+          }, 4000);
+        }
+      } else {
+        if (submitBtn) {
+          submitBtn.textContent      = '✗ Erro ao enviar. Tente novamente.';
+          submitBtn.style.background = '#ef4444';
+          submitBtn.disabled         = false;
+          setTimeout(() => {
+            submitBtn.textContent      = 'Enviar pesquisa para revisão →';
+            submitBtn.style.background = '';
+          }, 3000);
+        }
+      }
+    });
+  }
+})();
+</script>
 </body>
 </html>

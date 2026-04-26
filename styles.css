@@ -3711,3 +3711,176 @@ ul { list-style: none; }
   .admin-search-wrap { margin-left: 0; width: 100%; }
   .admin-search-input { width: 100%; }
 }
+/* ===========================
+   IMAGE UPLOAD — enviar.html
+=========================== */
+.upload-drop-area {
+  position: relative;
+  border: 2px dashed var(--gray-300);
+  border-radius: var(--radius-lg);
+  background: var(--gray-50);
+  transition: border-color .22s ease, background .22s ease, box-shadow .22s ease;
+  cursor: pointer;
+  overflow: hidden;
+  min-height: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.upload-drop-area:hover,
+.upload-drop-area.drag-over {
+  border-color: var(--blue-400);
+  background: var(--blue-50);
+  box-shadow: 0 0 0 4px rgba(37,99,235,.08);
+}
+
+.upload-drop-area.has-file {
+  border-style: solid;
+  border-color: var(--blue-300);
+  background: var(--white);
+  min-height: auto;
+}
+
+/* Hidden native file input — entire drop area is clickable */
+.upload-file-input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+  z-index: 2;
+}
+
+/* Placeholder (shown when no file selected) */
+.upload-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 32px 24px;
+  text-align: center;
+  pointer-events: none;
+  width: 100%;
+}
+
+.upload-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--gray-100);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--gray-400);
+  transition: background .22s, color .22s;
+}
+
+.upload-drop-area:hover .upload-icon,
+.upload-drop-area.drag-over .upload-icon {
+  background: rgba(37,99,235,.12);
+  color: var(--blue-500);
+}
+
+.upload-primary-text {
+  font-size: 14px;
+  color: var(--gray-600);
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+.upload-browse-link {
+  color: var(--blue-500);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.upload-secondary-text {
+  font-size: 12px;
+  color: var(--gray-400);
+  font-weight: 400;
+}
+
+/* Preview (shown after file selected) */
+.upload-preview {
+  width: 100%;
+  position: relative;
+}
+
+.upload-preview img {
+  width: 100%;
+  max-height: 320px;
+  object-fit: cover;
+  border-radius: calc(var(--radius-lg) - 2px);
+  display: block;
+}
+
+.upload-remove-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 10;
+  background: rgba(0,0,0,.65);
+  color: white;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 6px 12px;
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  letter-spacing: 0.2px;
+  transition: background .18s;
+  backdrop-filter: blur(4px);
+}
+
+.upload-remove-btn:hover {
+  background: rgba(220,38,38,.85);
+}
+
+/* Uploading state */
+.upload-drop-area.uploading {
+  pointer-events: none;
+  opacity: .7;
+}
+
+.upload-drop-area.uploading::after {
+  content: 'Enviando imagem…';
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--blue-600);
+  backdrop-filter: blur(2px);
+  z-index: 5;
+  border-radius: calc(var(--radius-lg) - 2px);
+}
+
+/* ===========================
+   ARTICLE COVER IMAGE — artigo.html
+=========================== */
+.article-cover {
+  margin-bottom: 36px;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  background: var(--gray-100);
+}
+
+.article-cover-img {
+  width: 100%;
+  max-height: 420px;
+  object-fit: cover;
+  display: block;
+  transition: opacity .3s ease;
+}

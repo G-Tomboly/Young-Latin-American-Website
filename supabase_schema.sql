@@ -82,3 +82,31 @@ INSERT INTO pesquisas (
   'publicado',
   '2025-04-10 14:00:00+00'
 );
+
+-- ─── IMAGEM DE PESQUISA ───────────────────────────────────────────────────────
+-- Adiciona coluna de URL da imagem (opcional) na tabela pesquisas
+ALTER TABLE pesquisas ADD COLUMN IF NOT EXISTS imagem_url text;
+
+-- ─── STORAGE: bucket público para imagens das pesquisas ──────────────────────
+-- Execute os comandos abaixo no SQL Editor do Supabase:
+
+-- 1. Cria o bucket (somente se não existir)
+INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+VALUES (
+  'pesquisa-imagens',
+  'pesquisa-imagens',
+  true,
+  5242880,                              -- 5 MB em bytes
+  ARRAY['image/jpeg','image/png','image/webp']
+)
+ON CONFLICT (id) DO NOTHING;
+
+-- 2. Política: qualquer pessoa pode fazer upload (INSERT)
+CREATE POLICY "pesquisa_imagens_upload_publico"
+  ON storage.objects FOR INSERT
+  WITH CHECK (bucket_id = 'pesquisa-imagens');
+
+-- 3. Política: qualquer pessoa pode ler as imagens (SELECT)
+CREATE POLICY "pesquisa_imagens_leitura_publica"
+  ON storage.objects FOR SELECT
+  USING (bucket_id = 'pesquisa-imagens');
