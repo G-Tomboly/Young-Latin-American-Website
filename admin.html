@@ -8,14 +8,333 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
+  <style>
+    /* ── Correções e melhorias do painel admin ── */
+    .admin-page { background: #f8fafc; min-height: 100vh; }
+
+    .admin-topbar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      height: 56px; background: #0a1628; border-bottom: 1px solid rgba(255,255,255,.08);
+      display: flex; align-items: center; padding: 0 24px; gap: 16px;
+    }
+    .admin-topbar-logo {
+      font-family: var(--font-display); font-size: 18px; font-weight: 800;
+      color: #fff; letter-spacing: -0.5px; display: flex; align-items: center; gap: 8px;
+    }
+    .admin-topbar-logo span {
+      background: #f97316; color: #fff; font-size: 10px; font-weight: 700;
+      padding: 2px 8px; border-radius: 4px; letter-spacing: 1px; text-transform: uppercase;
+    }
+    .admin-topbar-sep { width: 1px; height: 24px; background: rgba(255,255,255,.12); }
+    .admin-topbar-title { font-size: 13px; color: rgba(255,255,255,.55); font-weight: 400; }
+    .admin-topbar-right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+    .admin-topbar-user { font-size: 12px; color: rgba(255,255,255,.45); max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .admin-back-link {
+      display: flex; align-items: center; gap: 5px;
+      font-size: 13px; color: rgba(255,255,255,.6); text-decoration: none;
+      padding: 6px 12px; border-radius: 6px; transition: background .18s;
+    }
+    .admin-back-link:hover { background: rgba(255,255,255,.08); color: #fff; }
+    .admin-logout-btn {
+      font-size: 12px; color: rgba(255,255,255,.5); background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.1); border-radius: 6px;
+      padding: 5px 12px; cursor: pointer; transition: all .18s;
+    }
+    .admin-logout-btn:hover { background: rgba(239,68,68,.2); border-color: rgba(239,68,68,.4); color: #fca5a5; }
+
+    /* Guard (login) */
+    .admin-guard {
+      position: fixed; inset: 0; background: #030913;
+      display: flex; align-items: center; justify-content: center; z-index: 200;
+    }
+    .admin-login-modal {
+      background: #0a1628; border: 1px solid rgba(255,255,255,.1);
+      border-radius: 16px; padding: 40px; width: 100%; max-width: 400px;
+    }
+    .admin-login-logo { display: flex; align-items: center; gap: 10px; margin-bottom: 28px; }
+    .admin-login-logo-dot { width: 10px; height: 10px; border-radius: 50%; background: #f97316; }
+    .admin-login-logo-text { font-family: var(--font-display); font-size: 14px; font-weight: 700; color: rgba(255,255,255,.7); }
+    .admin-login-title { font-family: var(--font-display); font-size: 26px; font-weight: 800; color: #fff; letter-spacing: -1px; margin-bottom: 6px; }
+    .admin-login-sub { font-size: 14px; color: rgba(255,255,255,.4); margin-bottom: 28px; line-height: 1.5; }
+    .admin-login-field { margin-bottom: 16px; }
+    .admin-login-label { display: block; font-size: 12px; font-weight: 600; color: rgba(255,255,255,.5); text-transform: uppercase; letter-spacing: .8px; margin-bottom: 8px; }
+    .admin-login-input {
+      width: 100%; padding: 11px 14px; background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.12); border-radius: 8px;
+      color: #fff; font-size: 14px; outline: none; box-sizing: border-box;
+      transition: border-color .18s;
+    }
+    .admin-login-input:focus { border-color: #3b82f6; }
+    .admin-login-error {
+      font-size: 12px; color: #f87171; margin-top: 8px;
+      display: none; padding: 8px 12px; background: rgba(239,68,68,.1);
+      border-radius: 6px; border: 1px solid rgba(239,68,68,.2);
+    }
+    .admin-login-error.show { display: block; }
+    .admin-login-btn {
+      width: 100%; padding: 13px; margin-top: 8px;
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      color: #fff; border: none; border-radius: 10px;
+      font-family: var(--font-display); font-size: 15px; font-weight: 700;
+      cursor: pointer; transition: opacity .18s;
+    }
+    .admin-login-btn:hover { opacity: .9; }
+    .admin-login-btn:disabled { opacity: .5; cursor: not-allowed; }
+
+    /* Body do painel */
+    .admin-body { padding-top: 56px; }
+    .admin-content { max-width: 1200px; margin: 0 auto; padding: 32px 24px; }
+
+    /* Stats */
+    .admin-stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px; }
+    .admin-stat-card {
+      background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
+      padding: 20px 24px; transition: box-shadow .18s;
+    }
+    .admin-stat-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,.06); }
+    .admin-stat-label { font-size: 12px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: .8px; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+    .admin-stat-num { font-family: var(--font-display); font-size: 36px; font-weight: 800; color: #0f172a; letter-spacing: -1px; line-height: 1; }
+    .admin-stat-sub { font-size: 12px; color: #94a3b8; margin-top: 6px; }
+
+    /* Filtros */
+    .admin-filters { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+    .admin-filter-btn {
+      display: flex; align-items: center; gap: 6px;
+      padding: 7px 14px; border-radius: 8px; border: 1px solid #e2e8f0;
+      background: #fff; font-size: 13px; font-weight: 500; color: #475569;
+      cursor: pointer; transition: all .18s;
+    }
+    .admin-filter-btn:hover { border-color: #cbd5e1; background: #f8fafc; }
+    .admin-filter-btn.active { background: #0f172a; border-color: #0f172a; color: #fff; }
+    .count-badge {
+      display: inline-flex; align-items: center; justify-content: center;
+      background: #e2e8f0; color: #475569; font-size: 11px; font-weight: 700;
+      min-width: 20px; height: 20px; padding: 0 6px; border-radius: 10px;
+    }
+    .admin-filter-btn.active .count-badge { background: rgba(255,255,255,.2); color: #fff; }
+    .admin-search-wrap { margin-left: auto; position: relative; }
+    .admin-search-wrap svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #94a3b8; }
+    .admin-search-input {
+      padding: 8px 14px 8px 36px; border: 1px solid #e2e8f0;
+      border-radius: 8px; background: #fff; font-size: 13px; color: #0f172a;
+      outline: none; width: 240px; transition: border-color .18s;
+    }
+    .admin-search-input:focus { border-color: #3b82f6; }
+
+    /* Tabs */
+    .admin-tabs { display: flex; gap: 4px; border-bottom: 2px solid #e2e8f0; margin-bottom: 20px; }
+    .admin-tab-btn {
+      padding: 10px 18px; border: none; background: none;
+      font-size: 14px; font-weight: 600; color: #64748b; cursor: pointer;
+      border-bottom: 2px solid transparent; margin-bottom: -2px;
+      display: flex; align-items: center; gap: 8px; transition: all .18s;
+    }
+    .admin-tab-btn:hover { color: #0f172a; }
+    .admin-tab-btn.active { color: #0f172a; border-bottom-color: #0f172a; }
+    .admin-badge-new { background: #ef4444 !important; color: #fff !important; }
+    .admin-badge-pulse { animation: pulse .4s ease; }
+    @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.25)} }
+
+    .admin-tab-content.hidden { display: none; }
+
+    /* Cards de submissão */
+    .admin-submissions-list { display: flex; flex-direction: column; gap: 12px; }
+    .admin-sub-card {
+      background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
+      overflow: hidden; transition: box-shadow .18s;
+    }
+    .admin-sub-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,.07); }
+    .admin-sub-card-header {
+      display: flex; align-items: flex-start; gap: 14px;
+      padding: 18px 20px; cursor: pointer; user-select: none;
+    }
+    .admin-sub-avatar {
+      width: 44px; height: 44px; border-radius: 10px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-display); font-size: 16px; font-weight: 800; color: #fff;
+    }
+    .admin-sub-info { flex: 1; min-width: 0; }
+    .admin-sub-title { font-weight: 700; font-size: 15px; color: #0f172a; line-height: 1.4; margin-bottom: 6px; }
+    .admin-sub-meta { display: flex; flex-wrap: wrap; gap: 10px; font-size: 12px; color: #64748b; }
+    .admin-sub-status { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex-shrink: 0; }
+    .admin-sub-date { font-size: 11px; color: #94a3b8; }
+    .admin-sub-expand-btn {
+      background: none; border: none; cursor: pointer; padding: 4px;
+      color: #94a3b8; border-radius: 6px; transition: all .18s;
+    }
+    .admin-sub-expand-btn:hover { background: #f1f5f9; color: #475569; }
+    .admin-sub-card.expanded .admin-sub-expand-btn svg { transform: rotate(180deg); }
+    .admin-sub-expand-btn svg { transition: transform .25s ease; }
+
+    /* Status badges */
+    .status-badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; }
+    .status-pendente  { background: #fef3c7; color: #92400e; }
+    .status-em_revisao{ background: #dbeafe; color: #1e40af; }
+    .status-publicado { background: #dcfce7; color: #166534; }
+    .status-aprovado  { background: #d1fae5; color: #065f46; }
+    .status-rejeitado { background: #fee2e2; color: #991b1b; }
+
+    /* Corpo expandido do card */
+    .admin-sub-body { display: none; border-top: 1px solid #f1f5f9; }
+    .admin-sub-card.expanded .admin-sub-body { display: block; }
+    .admin-sub-body-inner { display: grid; grid-template-columns: 1fr 280px; gap: 0; }
+    .admin-sub-resumo-label { font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: .8px; margin-bottom: 8px; }
+    .admin-sub-resumo-text { font-size: 14px; color: #334155; line-height: 1.65; padding: 20px; }
+    .admin-sub-details-grid { padding: 20px; border-left: 1px solid #f1f5f9; }
+    .admin-detail-row { margin-bottom: 12px; }
+    .admin-detail-key { font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: .6px; margin-bottom: 3px; }
+    .admin-detail-val { font-size: 13px; color: #334155; }
+
+    /* Artigo completo */
+    .admin-artigo-full { border-top: 1px solid #f1f5f9; padding: 16px 20px; }
+    .admin-artigo-texto {
+      margin-top: 14px; padding: 20px; background: #f8fafc; border-radius: 8px;
+      border: 1px solid #e2e8f0; font-size: 14px; color: #334155; line-height: 1.8;
+      white-space: pre-wrap; max-height: 400px; overflow-y: auto;
+    }
+    .admin-artigo-texto.hidden { display: none; }
+
+    /* Nota editor */
+    .admin-nota-label { font-size: 12px; font-weight: 600; color: #475569; display: block; margin-bottom: 6px; }
+    .admin-nota-input {
+      width: 100%; padding: 10px 14px; border: 1px solid #e2e8f0;
+      border-radius: 8px; font-size: 13px; color: #334155;
+      resize: vertical; min-height: 80px; outline: none; box-sizing: border-box;
+      transition: border-color .18s; font-family: var(--font-body);
+    }
+    .admin-nota-input:focus { border-color: #3b82f6; }
+
+    /* Botões de ação */
+    .admin-btn-approve {
+      padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer;
+      font-size: 13px; font-weight: 600; background: #22c55e; color: #fff;
+      transition: opacity .18s; display: flex; align-items: center; gap: 6px;
+    }
+    .admin-btn-approve:hover:not(:disabled) { opacity: .85; }
+    .admin-btn-approve:disabled { opacity: .4; cursor: not-allowed; }
+    .admin-btn-reject {
+      padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer;
+      font-size: 13px; font-weight: 600; background: #ef4444; color: #fff;
+      transition: opacity .18s; display: flex; align-items: center; gap: 6px;
+    }
+    .admin-btn-reject:hover:not(:disabled) { opacity: .85; }
+    .admin-btn-reject:disabled { opacity: .4; cursor: not-allowed; }
+    .admin-btn-review {
+      padding: 8px 16px; border-radius: 8px; border: 1px solid #3b82f6; cursor: pointer;
+      font-size: 13px; font-weight: 600; background: #eff6ff; color: #2563eb;
+      transition: all .18s; display: flex; align-items: center; gap: 6px;
+    }
+    .admin-btn-review:hover:not(:disabled) { background: #dbeafe; }
+    .admin-btn-review:disabled { opacity: .4; cursor: not-allowed; }
+    .admin-btn-view {
+      padding: 8px 16px; border-radius: 8px; border: 1px solid #e2e8f0; cursor: pointer;
+      font-size: 13px; font-weight: 600; background: #f8fafc; color: #475569;
+      text-decoration: none; transition: all .18s; display: inline-flex; align-items: center; gap: 6px;
+    }
+    .admin-btn-view:hover { background: #f1f5f9; border-color: #cbd5e1; }
+    .admin-btn-save {
+      padding: 8px 16px; border-radius: 8px; border: 1px solid #8b5cf6; cursor: pointer;
+      font-size: 13px; font-weight: 600; background: #f5f3ff; color: #7c3aed;
+      transition: all .18s; display: flex; align-items: center; gap: 6px;
+    }
+    .admin-btn-save:hover { background: #ede9fe; }
+    .admin-btn-pending {
+      padding: 8px 16px; border-radius: 8px; border: 1px solid #f59e0b; cursor: pointer;
+      font-size: 13px; font-weight: 600; background: #fffbeb; color: #d97706;
+      transition: all .18s; display: flex; align-items: center; gap: 6px;
+    }
+    .admin-btn-pending:hover { background: #fef3c7; }
+
+    /* Empty state */
+    .admin-empty { text-align: center; padding: 80px 20px; }
+    .admin-empty-icon { font-size: 48px; margin-bottom: 16px; }
+    .admin-empty-title { font-family: var(--font-display); font-size: 18px; font-weight: 700; color: #334155; margin-bottom: 8px; }
+    .admin-empty-text { font-size: 14px; color: #94a3b8; }
+
+    /* Aba mensagens */
+    .admin-msg-toolbar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 0; margin-bottom: 16px;
+    }
+    .admin-msg-filter-label { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #475569; cursor: pointer; }
+    .admin-realtime-badge { font-size: 12px; color: #16a34a; background: #dcfce7; padding: 4px 10px; border-radius: 20px; font-weight: 600; }
+    .admin-msg-list { display: flex; flex-direction: column; gap: 12px; }
+    .admin-msg-card {
+      background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
+      padding: 20px; transition: box-shadow .18s;
+    }
+    .admin-msg-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,.07); }
+    .admin-msg-unread { border-left: 3px solid #3b82f6; }
+    .admin-msg-header { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 14px; }
+    .admin-msg-avatar {
+      width: 40px; height: 40px; border-radius: 10px; background: #3b82f6; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-display); font-size: 16px; font-weight: 800; color: #fff;
+    }
+    .admin-msg-info { flex: 1; min-width: 0; }
+    .admin-msg-name { font-weight: 700; font-size: 14px; color: #0f172a; display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+    .admin-msg-new-tag { background: #3b82f6; color: #fff; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 20px; }
+    .admin-msg-meta { font-size: 12px; color: #94a3b8; display: flex; flex-wrap: wrap; gap: 6px; }
+    .admin-msg-email { color: #3b82f6; text-decoration: none; }
+    .admin-msg-email:hover { text-decoration: underline; }
+    .admin-msg-subject { font-size: 12px; font-weight: 600; color: #475569; background: #f1f5f9; padding: 4px 10px; border-radius: 6px; flex-shrink: 0; }
+    .admin-msg-read-btn {
+      padding: 6px 12px; border-radius: 7px; border: 1px solid #22c55e;
+      background: #f0fdf4; color: #16a34a; font-size: 12px; font-weight: 600;
+      cursor: pointer; flex-shrink: 0; transition: all .18s;
+    }
+    .admin-msg-read-btn:hover { background: #dcfce7; }
+    .admin-msg-read-tag { font-size: 12px; color: #22c55e; font-weight: 600; flex-shrink: 0; }
+    .admin-msg-body { font-size: 14px; color: #334155; line-height: 1.7; background: #f8fafc; padding: 14px; border-radius: 8px; margin-bottom: 14px; }
+    .admin-msg-footer { display: flex; gap: 10px; }
+    .admin-btn-reply {
+      padding: 7px 14px; border-radius: 7px; border: 1px solid #e2e8f0;
+      background: #fff; color: #475569; font-size: 13px; font-weight: 600;
+      text-decoration: none; transition: all .18s;
+    }
+    .admin-btn-reply:hover { background: #f8fafc; border-color: #cbd5e1; }
+
+    /* Toast */
+    .admin-toast {
+      position: fixed; bottom: 28px; right: 28px; z-index: 9999;
+      padding: 12px 20px; border-radius: 10px; font-size: 14px; font-weight: 600;
+      color: #fff; box-shadow: 0 8px 24px rgba(0,0,0,.18);
+      transform: translateY(20px); opacity: 0; pointer-events: none;
+      transition: all .3s ease; max-width: 320px;
+    }
+    .admin-toast.show { transform: translateY(0); opacity: 1; }
+    .admin-toast.toast-ok  { background: #22c55e; }
+    .admin-toast.toast-err { background: #ef4444; }
+    .admin-toast.toast-inf { background: #3b82f6; }
+
+    /* Ações em linha */
+    .admin-actions-row {
+      padding: 12px 20px 18px; display: flex; gap: 10px;
+      flex-wrap: wrap; align-items: center; border-top: 1px solid #f1f5f9;
+    }
+
+    /* Responsivo */
+    @media (max-width: 900px) {
+      .admin-stats-row { grid-template-columns: repeat(2, 1fr); }
+      .admin-sub-body-inner { grid-template-columns: 1fr; }
+      .admin-sub-details-grid { border-left: none; border-top: 1px solid #f1f5f9; }
+    }
+    @media (max-width: 640px) {
+      .admin-content { padding: 16px; }
+      .admin-stats-row { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+      .admin-search-input { width: 100%; }
+      .admin-search-wrap { width: 100%; }
+      .admin-filters { gap: 6px; }
+      .admin-sub-card-header { flex-wrap: wrap; }
+    }
+  </style>
 </head>
 <body class="admin-page">
 
 <!-- ─── TOPBAR ─────────────────────────────────────────────── -->
 <header class="admin-topbar">
   <div class="admin-topbar-logo">
-    YLA
-    <span>Admin</span>
+    YLA <span>Admin</span>
   </div>
   <div class="admin-topbar-sep"></div>
   <div class="admin-topbar-title" id="adminTopbarTitle">Painel de Revisão</div>
@@ -29,9 +348,9 @@
   </div>
 </header>
 
-<!-- ─── GUARD (exibido antes de logar) ─────────────────────── -->
+<!-- ─── GUARD (login) ──────────────────────────────────────── -->
 <div class="admin-guard" id="adminGuard" style="display:none;">
-  <div class="admin-login-modal" style="max-width:400px;">
+  <div class="admin-login-modal">
     <div class="admin-login-logo">
       <div class="admin-login-logo-dot"></div>
       <div class="admin-login-logo-text">Young Latin American</div>
@@ -41,11 +360,13 @@
 
     <div class="admin-login-field">
       <label class="admin-login-label" for="guardEmail">Email</label>
-      <input class="admin-login-input" type="email" id="guardEmail" placeholder="admin@younglatinamerican.org" autocomplete="email">
+      <input class="admin-login-input" type="email" id="guardEmail"
+             placeholder="admin@younglatinamerican.org" autocomplete="email">
     </div>
     <div class="admin-login-field">
       <label class="admin-login-label" for="guardPass">Senha</label>
-      <input class="admin-login-input" type="password" id="guardPass" placeholder="••••••••" autocomplete="current-password">
+      <input class="admin-login-input" type="password" id="guardPass"
+             placeholder="••••••••" autocomplete="current-password">
       <div class="admin-login-error" id="guardError">Email ou senha incorretos.</div>
     </div>
     <button class="admin-login-btn" id="guardLoginBtn">Entrar no painel →</button>
@@ -57,32 +378,24 @@
   <div class="admin-content">
 
     <!-- Stats -->
-    <div class="admin-stats-row" id="adminStats">
+    <div class="admin-stats-row">
       <div class="admin-stat-card">
-        <div class="admin-stat-label">
-          <span>⏳</span> Pendentes
-        </div>
+        <div class="admin-stat-label"><span>⏳</span> Pendentes</div>
         <div class="admin-stat-num" id="statPendente">—</div>
         <div class="admin-stat-sub">aguardando revisão</div>
       </div>
       <div class="admin-stat-card">
-        <div class="admin-stat-label">
-          <span>🔍</span> Em revisão
-        </div>
+        <div class="admin-stat-label"><span>🔍</span> Em revisão</div>
         <div class="admin-stat-num" id="statRevisao">—</div>
         <div class="admin-stat-sub">em análise agora</div>
       </div>
       <div class="admin-stat-card">
-        <div class="admin-stat-label">
-          <span>✅</span> Publicadas
-        </div>
+        <div class="admin-stat-label"><span>✅</span> Publicadas</div>
         <div class="admin-stat-num" id="statPublicado">—</div>
         <div class="admin-stat-sub">no ar</div>
       </div>
       <div class="admin-stat-card">
-        <div class="admin-stat-label">
-          <span>❌</span> Rejeitadas
-        </div>
+        <div class="admin-stat-label"><span>❌</span> Rejeitadas</div>
         <div class="admin-stat-num" id="statRejeitado">—</div>
         <div class="admin-stat-sub">não aprovadas</div>
       </div>
@@ -112,7 +425,7 @@
     </div>
 
     <!-- Tabs -->
-    <div class="admin-tabs" id="adminTabs">
+    <div class="admin-tabs">
       <button class="admin-tab-btn active" data-tab="pesquisas">
         📄 Pesquisas <span class="count-badge" id="tabCountPesquisas">0</span>
       </button>
@@ -121,7 +434,7 @@
       </button>
     </div>
 
-    <!-- Lista de submissões -->
+    <!-- Aba pesquisas -->
     <div class="admin-tab-content" id="tabPesquisas">
       <div class="admin-submissions-list" id="adminList">
         <div class="admin-empty">
@@ -131,7 +444,7 @@
       </div>
     </div>
 
-    <!-- Aba de mensagens -->
+    <!-- Aba mensagens -->
     <div class="admin-tab-content hidden" id="tabMensagens">
       <div class="admin-msg-toolbar">
         <label class="admin-msg-filter-label">
@@ -157,12 +470,73 @@
 <script src="supabase.js"></script>
 <script>
 // ════════════════════════════════════════════════════════════
-//  YLA Admin Panel — admin.html
+//  YLA Admin Panel — Versão corrigida
 // ════════════════════════════════════════════════════════════
 
-const ADMIN_SESSION_KEY = 'yla_admin_session';
+// ─── Utilitários ─────────────────────────────────────────────
+const AREA_CORES = {
+  'biologia':        '#16a34a',
+  'quimica':         '#7c3aed',
+  'fisica':          '#2563eb',
+  'meio ambiente':   '#0891b2',
+  'tecnologia':      '#0f766e',
+  'saude':           '#ea580c',
+  'matematica':      '#4f46e5',
+  'ciencias sociais':'#db2777',
+};
 
-// ─── Supabase Auth ────────────────────────────────────────────
+function getAreaColor(area) {
+  if (!area) return '#3b82f6';
+  const n = area.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+  for (const [k, v] of Object.entries(AREA_CORES)) {
+    if (n.includes(k)) return v;
+  }
+  return '#3b82f6';
+}
+
+function getInitials(nome) {
+  if (!nome) return '?';
+  return nome.split(' ').slice(0, 2).map(p => p[0]).join('').toUpperCase();
+}
+
+function formatDate(iso) {
+  if (!iso) return '—';
+  return new Date(iso).toLocaleDateString('pt-BR', {
+    day: '2-digit', month: 'short', year: 'numeric',
+    hour: '2-digit', minute: '2-digit'
+  });
+}
+
+function statusLabel(s) {
+  const map = {
+    pendente:   'Pendente',
+    em_revisao: 'Em revisão',
+    publicado:  'Publicado',
+    aprovado:   'Aprovado',
+    rejeitado:  'Rejeitado',
+  };
+  return map[s] || s;
+}
+
+function escHtml(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;');
+}
+
+// ─── Toast ────────────────────────────────────────────────────
+function showToast(msg, type = 'ok') {
+  const t = document.getElementById('adminToast');
+  t.textContent = msg;
+  t.className = `admin-toast toast-${type} show`;
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.remove('show'), 3200);
+}
+
+// ─── Auth ─────────────────────────────────────────────────────
 async function adminLogin(email, password) {
   const { data, error } = await window.YLA.db.auth.signInWithPassword({ email, password });
   if (error) return { ok: false, error: error.message };
@@ -171,7 +545,6 @@ async function adminLogin(email, password) {
 
 async function adminLogout() {
   await window.YLA.db.auth.signOut();
-  sessionStorage.removeItem(ADMIN_SESSION_KEY);
   location.reload();
 }
 
@@ -191,177 +564,30 @@ document.querySelectorAll('.admin-tab-btn').forEach(btn => {
   });
 });
 
-// ─── Mensagens ────────────────────────────────────────────────
-let allMessages = [];
-let msgOnlyUnread = false;
-let realtimeChannel = null;
-
-async function loadMessages() {
-  const { data, error } = await window.YLA.db
-    .from('contatos')
-    .select('*')
-    .order('created_at', { ascending: false });
-
-  if (error) { showToast('Erro ao carregar mensagens: ' + error.message, 'err'); return; }
-  allMessages = data ?? [];
-  renderMessages();
-  updateMsgBadge();
-}
-
-function updateMsgBadge() {
-  const unread = allMessages.filter(m => !m.lido).length;
-  const badge = document.getElementById('tabCountMensagens');
-  if (badge) {
-    badge.textContent = unread || allMessages.length;
-    badge.style.background = unread > 0 ? '#ef4444' : '';
-  }
-}
-
-function renderMessages() {
-  const list = document.getElementById('adminMsgList');
-  const items = msgOnlyUnread ? allMessages.filter(m => !m.lido) : allMessages;
-  if (!list) return;
-
-  if (items.length === 0) {
-    list.innerHTML = `<div class="admin-empty"><div class="admin-empty-icon">💬</div><div class="admin-empty-title">${msgOnlyUnread ? 'Nenhuma mensagem não lida' : 'Nenhuma mensagem ainda'}</div></div>`;
-    return;
-  }
-
-  list.innerHTML = items.map(m => `
-    <div class="admin-msg-card ${m.lido ? '' : 'admin-msg-unread'}" id="msg-${m.id}">
-      <div class="admin-msg-header">
-        <div class="admin-msg-avatar">${(m.nome||'?')[0].toUpperCase()}</div>
-        <div class="admin-msg-info">
-          <div class="admin-msg-name">${escHtml(m.nome)} ${!m.lido ? '<span class="admin-msg-new-tag">Nova</span>' : ''}</div>
-          <div class="admin-msg-meta">
-            <a href="mailto:${escHtml(m.email)}" class="admin-msg-email">${escHtml(m.email)}</a>
-            ${m.pais ? `<span>· ${escHtml(m.pais)}</span>` : ''}
-            <span>· ${formatDate(m.created_at)}</span>
-          </div>
-        </div>
-        <div class="admin-msg-subject">${escHtml(m.assunto)}</div>
-        ${!m.lido ? `<button class="admin-msg-read-btn" data-id="${m.id}">✓ Marcar lida</button>` : '<span class="admin-msg-read-tag">✓ Lida</span>'}
-      </div>
-      <div class="admin-msg-body">${escHtml(m.mensagem)}</div>
-      <div class="admin-msg-footer">
-        <a href="mailto:${escHtml(m.email)}?subject=Re: ${encodeURIComponent(m.assunto)}" class="admin-btn-reply">✉️ Responder por email</a>
-      </div>
-    </div>
-  `).join('');
-
-  list.querySelectorAll('.admin-msg-read-btn').forEach(btn => {
-    btn.addEventListener('click', () => markMessageRead(btn.dataset.id));
-  });
-}
-
-async function markMessageRead(id) {
-  const { error } = await window.YLA.db
-    .from('contatos')
-    .update({ lido: true })
-    .eq('id', id);
-
-  if (error) { showToast('Erro: ' + error.message, 'err'); return; }
-
-  const idx = allMessages.findIndex(m => m.id === id);
-  if (idx >= 0) allMessages[idx].lido = true;
-
-  const card = document.getElementById('msg-' + id);
-  if (card) {
-    card.classList.remove('admin-msg-unread');
-    const btn = card.querySelector('.admin-msg-read-btn');
-    if (btn) { btn.outerHTML = '<span class="admin-msg-read-tag">✓ Lida</span>'; }
-    const nameEl = card.querySelector('.admin-msg-name');
-    if (nameEl) { nameEl.querySelector('.admin-msg-new-tag')?.remove(); }
-  }
-
-  updateMsgBadge();
-  showToast('Mensagem marcada como lida', 'inf');
-}
-
-function subscribeRealtimeMessages() {
-  if (realtimeChannel) window.YLA.db.removeChannel(realtimeChannel);
-
-  realtimeChannel = window.YLA.db
-    .channel('contatos-changes')
-    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'contatos' }, (payload) => {
-      allMessages.unshift(payload.new);
-      renderMessages();
-      updateMsgBadge();
-      showToast('💬 Nova mensagem recebida!', 'inf');
-
-      const badge = document.getElementById('tabCountMensagens');
-      if (badge) {
-        badge.classList.add('admin-badge-pulse');
-        setTimeout(() => badge.classList.remove('admin-badge-pulse'), 1000);
-      }
-    })
-    .subscribe((status) => {
-      const dot = document.getElementById('realtimeBadge');
-      if (dot) dot.textContent = status === 'SUBSCRIBED' ? '🟢 Tempo real ativo' : '🟡 Reconectando...';
-    });
-}
-
-document.getElementById('msgOnlyUnread')?.addEventListener('change', (e) => {
-  msgOnlyUnread = e.target.checked;
-  renderMessages();
-});
-
-// ─── Toast ────────────────────────────────────────────────────
-function showToast(msg, type = 'ok') {
-  const t = document.getElementById('adminToast');
-  t.textContent = msg;
-  t.className = `admin-toast toast-${type} show`;
-  clearTimeout(t._timer);
-  t._timer = setTimeout(() => { t.classList.remove('show'); }, 3200);
-}
-
-// ─── Utilitários ─────────────────────────────────────────────
-const AREA_CORES = {
-  'biologia':        '#16a34a',
-  'quimica':         '#7c3aed',
-  'fisica':          '#2563eb',
-  'meio ambiente':   '#0891b2',
-  'tecnologia':      '#0f766e',
-  'saude':           '#ea580c',
-  'matematica':      '#4f46e5',
-  'ciencias sociais':'#db2777',
-};
-function getAreaColor(area) {
-  if (!area) return '#3b82f6';
-  const n = area.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
-  for (const [k,v] of Object.entries(AREA_CORES)) {
-    if (n.includes(k)) return v;
-  }
-  return '#3b82f6';
-}
-function getInitials(nome) {
-  if (!nome) return '?';
-  return nome.split(' ').slice(0,2).map(p=>p[0]).join('').toUpperCase();
-}
-function formatDate(iso) {
-  if (!iso) return '—';
-  return new Date(iso).toLocaleDateString('pt-BR', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' });
-}
-function statusLabel(s) {
-  const map = { pendente:'Pendente', em_revisao:'Em revisão', publicado:'Publicado', aprovado:'Aprovado', rejeitado:'Rejeitado' };
-  return map[s] || s;
-}
-
-// ─── Dados ────────────────────────────────────────────────────
+// ─── Dados e estado ───────────────────────────────────────────
 let allSubmissions = [];
 let currentFilter  = 'todos';
 let searchQuery    = '';
+let allMessages    = [];
+let msgOnlyUnread  = false;
+let realtimeChannel = null;
 
+// ─── Carregar pesquisas (admin vê TODAS) ──────────────────────
 async function loadSubmissions() {
+  const list = document.getElementById('adminList');
+  list.innerHTML = `<div class="admin-empty"><div class="admin-empty-icon">⏳</div><div class="admin-empty-title">Carregando...</div></div>`;
+
   const { data, error } = await window.YLA.db
     .from('pesquisas')
     .select('*')
     .order('created_at', { ascending: false });
 
   if (error) {
-    showToast('Erro ao carregar submissões: ' + error.message, 'err');
+    showToast('Erro ao carregar: ' + error.message, 'err');
+    list.innerHTML = `<div class="admin-empty"><div class="admin-empty-icon">⚠️</div><div class="admin-empty-title">Erro ao carregar submissões</div><div class="admin-empty-text">${escHtml(error.message)}</div></div>`;
     return;
   }
+
   allSubmissions = data ?? [];
   updateStats();
   renderList();
@@ -375,7 +601,6 @@ function updateStats() {
   document.getElementById('statRevisao').textContent   = count('em_revisao');
   document.getElementById('statPublicado').textContent = count('publicado');
   document.getElementById('statRejeitado').textContent = count('rejeitado');
-
   document.getElementById('countTodos').textContent    = allSubmissions.length;
   document.getElementById('countPendente').textContent = count('pendente');
   document.getElementById('countRevisao').textContent  = count('em_revisao');
@@ -383,14 +608,14 @@ function updateStats() {
   document.getElementById('countRejeitado').textContent= count('rejeitado');
 }
 
-function filtered() {
+function getFiltered() {
   return allSubmissions.filter(p => {
     const matchFilter = currentFilter === 'todos' || p.status === currentFilter;
     const q = searchQuery.toLowerCase();
     const matchSearch = !q ||
       (p.titulo||'').toLowerCase().includes(q) ||
-      (p.nome||'').toLowerCase().includes(q) ||
-      (p.area||'').toLowerCase().includes(q) ||
+      (p.nome||'').toLowerCase().includes(q)   ||
+      (p.area||'').toLowerCase().includes(q)   ||
       (p.pais||'').toLowerCase().includes(q);
     return matchFilter && matchSearch;
   });
@@ -398,61 +623,35 @@ function filtered() {
 
 function renderList() {
   const list = document.getElementById('adminList');
-  const items = filtered();
+  const items = getFiltered();
+
+  if (allSubmissions.length === 0) {
+    list.innerHTML = `<div class="admin-empty"><div class="admin-empty-icon">📭</div><div class="admin-empty-title">Nenhuma submissão ainda</div><div class="admin-empty-text">Quando pesquisadores enviarem trabalhos eles aparecerão aqui.</div></div>`;
+    return;
+  }
 
   if (items.length === 0) {
-    list.innerHTML = `
-      <div class="admin-empty">
-        <div class="admin-empty-icon">🔍</div>
-        <div class="admin-empty-title">Nenhuma submissão encontrada</div>
-        <div class="admin-empty-text">Tente outro filtro ou termo de busca.</div>
-      </div>`;
+    list.innerHTML = `<div class="admin-empty"><div class="admin-empty-icon">🔍</div><div class="admin-empty-title">Nenhuma submissão encontrada</div><div class="admin-empty-text">Tente outro filtro ou termo de busca.</div></div>`;
     return;
   }
 
   list.innerHTML = items.map(p => buildCard(p)).join('');
-
-  // Event listeners dos cards
-  list.querySelectorAll('.admin-sub-expand-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const card = btn.closest('.admin-sub-card');
-      card.classList.toggle('expanded');
-    });
-  });
-
-  list.querySelectorAll('.admin-btn-approve').forEach(btn => {
-    btn.addEventListener('click', () => handleAction(btn.dataset.id, 'publicado'));
-  });
-  list.querySelectorAll('.admin-btn-reject').forEach(btn => {
-    btn.addEventListener('click', () => handleAction(btn.dataset.id, 'rejeitado'));
-  });
-  list.querySelectorAll('.admin-btn-review').forEach(btn => {
-    btn.addEventListener('click', () => handleAction(btn.dataset.id, 'em_revisao'));
-  });
-  list.querySelectorAll('.admin-toggle-artigo').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const id   = btn.dataset.id;
-      const wrap = document.getElementById('artigo-' + id);
-      if (!wrap) return;
-      const hidden = wrap.classList.toggle('hidden');
-      btn.textContent = hidden ? '📄 Ver texto completo' : '📄 Ocultar texto';
-    });
-  });
+  attachCardListeners(list);
 }
 
 function buildCard(p) {
   const cor      = getAreaColor(p.area);
   const initials = getInitials(p.nome);
   const statusCls = `status-${p.status}`;
-
-  const showApprove = p.status !== 'publicado' && p.status !== 'aprovado';
+  const showApprove = p.status !== 'publicado';
   const showReject  = p.status !== 'rejeitado';
   const showReview  = p.status === 'pendente';
+  const showPending = p.status === 'em_revisao' || p.status === 'rejeitado';
   const showView    = p.status === 'publicado';
 
   return `
   <div class="admin-sub-card" id="card-${p.id}">
-    <div class="admin-sub-card-header">
+    <div class="admin-sub-card-header" data-card-toggle="${p.id}">
       <div class="admin-sub-avatar" style="background:${cor};">${initials}</div>
       <div class="admin-sub-info">
         <div class="admin-sub-title">${escHtml(p.titulo)}</div>
@@ -477,20 +676,22 @@ function buildCard(p) {
     <div class="admin-sub-body">
       <div class="admin-sub-body-inner">
         <div>
-          <div class="admin-sub-resumo-label">Resumo</div>
-          <div class="admin-sub-resumo-text">${escHtml(p.resumo)}</div>
-          ${p.keywords ? `
-          <div style="margin-top:14px;">
-            <div class="admin-sub-resumo-label">Palavras-chave</div>
-            <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;">
-              ${(p.keywords||'').split(',').map(k=>`<span style="background:#f1f5f9;color:#475569;font-size:12px;padding:3px 10px;border-radius:20px;">${escHtml(k.trim())}</span>`).join('')}
-            </div>
-          </div>` : ''}
+          <div class="admin-sub-resumo-text">
+            <div class="admin-sub-resumo-label">Resumo</div>
+            ${escHtml(p.resumo)}
+            ${p.keywords ? `
+            <div style="margin-top:14px;">
+              <div class="admin-sub-resumo-label">Palavras-chave</div>
+              <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;">
+                ${(p.keywords||'').split(',').map(k=>`<span style="background:#f1f5f9;color:#475569;font-size:12px;padding:3px 10px;border-radius:20px;">${escHtml(k.trim())}</span>`).join('')}
+              </div>
+            </div>` : ''}
+          </div>
         </div>
         <div class="admin-sub-details-grid">
           <div class="admin-detail-row">
             <div class="admin-detail-key">Email</div>
-            <div class="admin-detail-val"><a href="mailto:${escHtml(p.email)}" style="color:var(--blue-500);">${escHtml(p.email)}</a></div>
+            <div class="admin-detail-val"><a href="mailto:${escHtml(p.email)}" style="color:#3b82f6;">${escHtml(p.email)}</a></div>
           </div>
           <div class="admin-detail-row">
             <div class="admin-detail-key">Idade</div>
@@ -510,58 +711,98 @@ function buildCard(p) {
             <div class="admin-detail-key">Submetido</div>
             <div class="admin-detail-val">${formatDate(p.created_at)}</div>
           </div>
+          ${p.imagem_url ? `
+          <div class="admin-detail-row">
+            <div class="admin-detail-key">Imagem</div>
+            <div class="admin-detail-val">
+              <a href="${escHtml(p.imagem_url)}" target="_blank" style="color:#3b82f6;font-size:12px;">Ver imagem ↗</a>
+            </div>
+          </div>` : ''}
           ${p.notas_editor ? `
           <div class="admin-detail-row">
-            <div class="admin-detail-key">Nota</div>
-            <div class="admin-detail-val" style="color:var(--blue-600);">${escHtml(p.notas_editor)}</div>
+            <div class="admin-detail-key">Nota atual</div>
+            <div class="admin-detail-val" style="color:#7c3aed;font-size:12px;">${escHtml(p.notas_editor)}</div>
           </div>` : ''}
         </div>
       </div>
 
-      <!-- Artigo completo -->
+      <!-- Texto completo -->
       <div class="admin-artigo-full">
-        <button class="admin-btn-view admin-toggle-artigo" data-id="${p.id}" style="margin-bottom:0;">
+        <button class="admin-btn-view admin-toggle-artigo" data-id="${p.id}">
           📄 Ver texto completo
         </button>
-        <div class="admin-artigo-texto hidden" id="artigo-${p.id}">${escHtml(p.artigo_texto || '')}</div>
+        <div class="admin-artigo-texto hidden" id="artigo-${p.id}">${escHtml(p.artigo_texto || '(sem texto)')}</div>
       </div>
 
       <!-- Nota do editor -->
-      <div style="padding: 16px 24px 4px;">
-        <label class="admin-nota-label" for="nota-${p.id}">Nota para o editor (interna)</label>
+      <div style="padding:16px 20px 4px;">
+        <label class="admin-nota-label" for="nota-${p.id}">📝 Nota interna do editor</label>
         <textarea class="admin-nota-input" id="nota-${p.id}" placeholder="Adicione observações editoriais aqui...">${escHtml(p.notas_editor || '')}</textarea>
       </div>
 
       <!-- Ações -->
-      <div style="padding: 12px 24px 20px; display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
-        ${showReview  ? `<button class="admin-btn-review" data-id="${p.id}">🔍 Marcar em revisão</button>` : ''}
-        ${showApprove ? `<button class="admin-btn-approve" data-id="${p.id}">✅ Publicar</button>` : ''}
-        ${showReject  ? `<button class="admin-btn-reject"  data-id="${p.id}">❌ Rejeitar</button>` : ''}
+      <div class="admin-actions-row">
+        ${showReview  ? `<button class="admin-btn-review admin-action-btn"  data-id="${p.id}" data-action="em_revisao">🔍 Marcar em revisão</button>` : ''}
+        ${showApprove ? `<button class="admin-btn-approve admin-action-btn" data-id="${p.id}" data-action="publicado">✅ Publicar</button>` : ''}
+        ${showReject  ? `<button class="admin-btn-reject admin-action-btn"  data-id="${p.id}" data-action="rejeitado">❌ Rejeitar</button>` : ''}
+        ${showPending ? `<button class="admin-btn-pending admin-action-btn" data-id="${p.id}" data-action="pendente">↩️ Voltar a pendente</button>` : ''}
         ${showView    ? `<a href="artigo.html?id=${p.id}" target="_blank" class="admin-btn-view">🔗 Ver publicação</a>` : ''}
-        <button class="admin-btn-view" onclick="saveNota('${p.id}')" style="margin-left:auto;">💾 Salvar nota</button>
+        <button class="admin-btn-save admin-save-nota-btn" data-id="${p.id}" style="margin-left:auto;">💾 Salvar nota</button>
       </div>
     </div>
   </div>`;
 }
 
-function escHtml(str) {
-  if (!str) return '';
-  return String(str)
-    .replace(/&/g,'&amp;')
-    .replace(/</g,'&lt;')
-    .replace(/>/g,'&gt;')
-    .replace(/"/g,'&quot;');
+function attachCardListeners(container) {
+  // Toggle expand via header
+  container.querySelectorAll('[data-card-toggle]').forEach(header => {
+    header.addEventListener('click', () => {
+      const card = header.closest('.admin-sub-card');
+      card.classList.toggle('expanded');
+    });
+  });
+
+  // Ações de status
+  container.querySelectorAll('.admin-action-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      handleAction(btn.dataset.id, btn.dataset.action);
+    });
+  });
+
+  // Toggle texto completo
+  container.querySelectorAll('.admin-toggle-artigo').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const id   = btn.dataset.id;
+      const wrap = document.getElementById('artigo-' + id);
+      if (!wrap) return;
+      const hidden = wrap.classList.toggle('hidden');
+      btn.textContent = hidden ? '📄 Ver texto completo' : '📄 Ocultar texto';
+    });
+  });
+
+  // Salvar nota
+  container.querySelectorAll('.admin-save-nota-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      saveNota(btn.dataset.id, btn);
+    });
+  });
 }
 
 // ─── Ações editoriais ─────────────────────────────────────────
 async function handleAction(id, novoStatus) {
-  const btnsApprove = document.querySelectorAll(`.admin-btn-approve[data-id="${id}"]`);
-  const btnsReject  = document.querySelectorAll(`.admin-btn-reject[data-id="${id}"]`);
-  const btnsReview  = document.querySelectorAll(`.admin-btn-review[data-id="${id}"]`);
-  [...btnsApprove, ...btnsReject, ...btnsReview].forEach(b => b.disabled = true);
+  const card = document.getElementById('card-' + id);
+  const btns = card ? card.querySelectorAll('.admin-action-btn') : [];
+  btns.forEach(b => b.disabled = true);
 
   const updateData = { status: novoStatus };
-  if (novoStatus === 'publicado') updateData.publicado_em = new Date().toISOString();
+  if (novoStatus === 'publicado') {
+    updateData.publicado_em = new Date().toISOString();
+  } else if (novoStatus === 'pendente') {
+    updateData.publicado_em = null;
+  }
 
   const { error } = await window.YLA.db
     .from('pesquisas')
@@ -570,40 +811,53 @@ async function handleAction(id, novoStatus) {
 
   if (error) {
     showToast('Erro: ' + error.message, 'err');
-    [...btnsApprove, ...btnsReject, ...btnsReview].forEach(b => b.disabled = false);
+    btns.forEach(b => b.disabled = false);
     return;
   }
 
-  const labels = { publicado: '✅ Publicado com sucesso!', rejeitado: '❌ Pesquisa rejeitada.', em_revisao: '🔍 Marcado como em revisão.' };
-  showToast(labels[novoStatus] || 'Atualizado!', novoStatus === 'publicado' ? 'ok' : novoStatus === 'rejeitado' ? 'err' : 'inf');
+  const labels = {
+    publicado:  '✅ Pesquisa publicada!',
+    rejeitado:  '❌ Pesquisa rejeitada.',
+    em_revisao: '🔍 Marcado como em revisão.',
+    pendente:   '↩️ Voltou para pendente.',
+  };
+  const types = { publicado:'ok', rejeitado:'err', em_revisao:'inf', pendente:'inf' };
+  showToast(labels[novoStatus] || 'Atualizado!', types[novoStatus] || 'ok');
 
-  // Atualiza localmente sem recarregar tudo
+  // Atualiza estado local e re-renderiza
   const idx = allSubmissions.findIndex(p => p.id === id);
   if (idx >= 0) {
     allSubmissions[idx].status = novoStatus;
     if (novoStatus === 'publicado') allSubmissions[idx].publicado_em = updateData.publicado_em;
+    if (novoStatus === 'pendente') allSubmissions[idx].publicado_em = null;
   }
   updateStats();
   renderList();
 }
 
-async function saveNota(id) {
+async function saveNota(id, btn) {
   const input = document.getElementById('nota-' + id);
   if (!input) return;
   const nota = input.value.trim();
+  const original = btn ? btn.textContent : '';
+  if (btn) { btn.disabled = true; btn.textContent = 'Salvando...'; }
 
   const { error } = await window.YLA.db
     .from('pesquisas')
     .update({ notas_editor: nota })
     .eq('id', id);
 
-  if (error) { showToast('Erro ao salvar: ' + error.message, 'err'); return; }
+  if (btn) { btn.disabled = false; btn.textContent = original; }
+
+  if (error) {
+    showToast('Erro ao salvar: ' + error.message, 'err');
+    return;
+  }
 
   const idx = allSubmissions.findIndex(p => p.id === id);
   if (idx >= 0) allSubmissions[idx].notas_editor = nota;
-  showToast('💾 Nota salva!', 'inf');
+  showToast('💾 Nota salva com sucesso!', 'inf');
 }
-window.saveNota = saveNota; // expõe para onclick inline
 
 // ─── Filtros e busca ──────────────────────────────────────────
 document.querySelectorAll('.admin-filter-btn').forEach(btn => {
@@ -620,10 +874,128 @@ document.getElementById('adminSearch').addEventListener('input', (e) => {
   renderList();
 });
 
+// ─── Mensagens ────────────────────────────────────────────────
+async function loadMessages() {
+  const { data, error } = await window.YLA.db
+    .from('contatos')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    showToast('Erro ao carregar mensagens: ' + error.message, 'err');
+    return;
+  }
+  allMessages = data ?? [];
+  renderMessages();
+  updateMsgBadge();
+}
+
+function updateMsgBadge() {
+  const unread = allMessages.filter(m => !m.lido).length;
+  const badge  = document.getElementById('tabCountMensagens');
+  if (!badge) return;
+  badge.textContent = unread || allMessages.length;
+  badge.style.background = unread > 0 ? '#ef4444' : '';
+}
+
+function renderMessages() {
+  const list  = document.getElementById('adminMsgList');
+  const items = msgOnlyUnread ? allMessages.filter(m => !m.lido) : allMessages;
+  if (!list) return;
+
+  if (items.length === 0) {
+    list.innerHTML = `<div class="admin-empty"><div class="admin-empty-icon">💬</div><div class="admin-empty-title">${msgOnlyUnread ? 'Nenhuma mensagem não lida' : 'Nenhuma mensagem ainda'}</div></div>`;
+    return;
+  }
+
+  list.innerHTML = items.map(m => `
+    <div class="admin-msg-card ${m.lido ? '' : 'admin-msg-unread'}" id="msg-${m.id}">
+      <div class="admin-msg-header">
+        <div class="admin-msg-avatar">${(m.nome||'?')[0].toUpperCase()}</div>
+        <div class="admin-msg-info">
+          <div class="admin-msg-name">
+            ${escHtml(m.nome)}
+            ${!m.lido ? '<span class="admin-msg-new-tag">Nova</span>' : ''}
+          </div>
+          <div class="admin-msg-meta">
+            <a href="mailto:${escHtml(m.email)}" class="admin-msg-email">${escHtml(m.email)}</a>
+            ${m.pais ? `<span>· ${escHtml(m.pais)}</span>` : ''}
+            <span>· ${formatDate(m.created_at)}</span>
+          </div>
+        </div>
+        <div class="admin-msg-subject">${escHtml(m.assunto)}</div>
+        ${!m.lido
+          ? `<button class="admin-msg-read-btn" data-msg-id="${m.id}">✓ Marcar lida</button>`
+          : '<span class="admin-msg-read-tag">✓ Lida</span>'
+        }
+      </div>
+      <div class="admin-msg-body">${escHtml(m.mensagem)}</div>
+      <div class="admin-msg-footer">
+        <a href="mailto:${escHtml(m.email)}?subject=Re: ${encodeURIComponent(m.assunto)}" class="admin-btn-reply">✉️ Responder por email</a>
+      </div>
+    </div>
+  `).join('');
+
+  list.querySelectorAll('.admin-msg-read-btn').forEach(btn => {
+    btn.addEventListener('click', () => markMessageRead(btn.dataset.msgId));
+  });
+}
+
+async function markMessageRead(id) {
+  const { error } = await window.YLA.db
+    .from('contatos')
+    .update({ lido: true })
+    .eq('id', id);
+
+  if (error) { showToast('Erro: ' + error.message, 'err'); return; }
+
+  const idx = allMessages.findIndex(m => m.id === id);
+  if (idx >= 0) allMessages[idx].lido = true;
+
+  const card = document.getElementById('msg-' + id);
+  if (card) {
+    card.classList.remove('admin-msg-unread');
+    const btn = card.querySelector('.admin-msg-read-btn');
+    if (btn) btn.outerHTML = '<span class="admin-msg-read-tag">✓ Lida</span>';
+    const nameEl = card.querySelector('.admin-msg-name');
+    if (nameEl) nameEl.querySelector('.admin-msg-new-tag')?.remove();
+  }
+
+  updateMsgBadge();
+  showToast('Mensagem marcada como lida', 'inf');
+}
+
+function subscribeRealtimeMessages() {
+  if (realtimeChannel) window.YLA.db.removeChannel(realtimeChannel);
+
+  realtimeChannel = window.YLA.db
+    .channel('yla-contatos-realtime')
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'contatos' }, (payload) => {
+      allMessages.unshift(payload.new);
+      renderMessages();
+      updateMsgBadge();
+      showToast('💬 Nova mensagem recebida!', 'inf');
+      const badge = document.getElementById('tabCountMensagens');
+      if (badge) {
+        badge.classList.add('admin-badge-pulse');
+        setTimeout(() => badge.classList.remove('admin-badge-pulse'), 1000);
+      }
+    })
+    .subscribe((status) => {
+      const dot = document.getElementById('realtimeBadge');
+      if (dot) dot.textContent = status === 'SUBSCRIBED' ? '🟢 Tempo real ativo' : '🟡 Reconectando...';
+    });
+}
+
+document.getElementById('msgOnlyUnread').addEventListener('change', (e) => {
+  msgOnlyUnread = e.target.checked;
+  renderMessages();
+});
+
 // ─── Auth flow ────────────────────────────────────────────────
 async function initAdmin() {
+  // Verifica sessão ativa
   const session = await getAdminSession();
-
   if (session) {
     showPanel(session.user);
   } else {
@@ -645,12 +1017,18 @@ function showGuard() {
   document.getElementById('adminBody').style.display  = 'none';
 }
 
-// Login via guard inline
+// Login
 document.getElementById('guardLoginBtn').addEventListener('click', async () => {
   const email = document.getElementById('guardEmail').value.trim();
   const pass  = document.getElementById('guardPass').value;
   const err   = document.getElementById('guardError');
   const btn   = document.getElementById('guardLoginBtn');
+
+  if (!email || !pass) {
+    err.textContent = 'Preencha email e senha.';
+    err.classList.add('show');
+    return;
+  }
 
   err.classList.remove('show');
   btn.disabled    = true;
@@ -671,6 +1049,10 @@ document.getElementById('guardLoginBtn').addEventListener('click', async () => {
 
 document.getElementById('guardPass').addEventListener('keydown', (e) => {
   if (e.key === 'Enter') document.getElementById('guardLoginBtn').click();
+});
+
+document.getElementById('guardEmail').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') document.getElementById('guardPass').focus();
 });
 
 document.getElementById('adminLogoutBtn').addEventListener('click', adminLogout);

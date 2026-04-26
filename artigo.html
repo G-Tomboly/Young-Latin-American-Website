@@ -164,6 +164,7 @@
   document.addEventListener('yla:artigo-carregado', exibirImagemSeExistir);
 
   // Fallback: polling leve para quando main.js não dispara o evento
+    // Verifica se main.js expôs o objeto do artigo em window.__artigoAtual
   let tentativas = 0;
   const intervalo = setInterval(() => {
     tentativas++;
