@@ -3,12 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Young Latin American — Ciência Jovem da América Latina</title>
-  <meta name="description" content="Plataforma de divulgação científica juvenil para jovens pesquisadores da América Latina. Publique suas pesquisas, seja reconhecido.">
+  <title>Young Latin American — Ciência, oportunidades e conexões</title>
+  <meta name="description" content="Revista científica, oportunidades acadêmicas abertas e um mapa de iniciativas juvenis da América Latina. Descubra, conecte-se e conquiste.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300;1,9..40,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="ecossistema.css">
 </head>
 <body>
 
@@ -20,6 +21,8 @@
       <a href="index.html" class="nav-link active">Home</a>
       <a href="publicacoes.html" class="nav-link">Publicações</a>
       <a href="acoes.html" class="nav-link">Ações</a>
+      <a href="opportunities.html" class="nav-link">Opportunities</a>
+      <a href="youth-map.html" class="nav-link">Youth Map</a>
       <a href="sobre.html" class="nav-link">Sobre</a>
       <a href="diretrizes.html" class="nav-link">Diretrizes</a>
       <a href="faq.html" class="nav-link">FAQ</a>
@@ -47,18 +50,18 @@
   <div class="hero-content">
     <div class="hero-badge">
       <span class="badge-dot"></span>
-      Plataforma científica juvenil · América Latina
+      Ciência · Oportunidades · Conexões
     </div>
     <h1 class="hero-title">
-      Sua pesquisa<br>
-      <em>merece ser vista.</em>
+      Seu potencial<br>
+      <em>merece oportunidades.</em>
     </h1>
     <p class="hero-subtitle">
-      A Young Latin American é o espaço onde jovens pesquisadores de 13 a 18 anos publicam, compartilham e ganham reconhecimento pelo seu trabalho científico.
+      Na Young Latin American, jovens latino-americanos encontram oportunidades, descobrem iniciativas perto de si e compartilham suas pesquisas. Ciência, acesso e visibilidade em um só lugar.
     </p>
     <div class="hero-actions">
-      <a href="enviar.html" class="btn-primary">Publicar minha pesquisa</a>
-      <a href="publicacoes.html" class="btn-secondary">Ver publicações →</a>
+      <a href="opportunities.html" class="btn-primary">Encontrar oportunidades</a>
+      <a href="youth-map.html" class="btn-secondary">Explorar o Youth Map →</a>
     </div>
     <div class="hero-stats">
       <div class="stat">
@@ -168,9 +171,38 @@
   <div class="container">
     <div class="mission-inner">
       <p class="mission-text">
-        Muitos estudantes realizam pesquisas relevantes, mas raramente conseguem publicá-las. <strong>A YLA nasceu para mudar isso.</strong>
+        Não falta potencial na juventude latino-americana. <strong>Faltam acesso, conexão e visibilidade. A YLA existe para mudar isso.</strong>
       </p>
       <a href="sobre.html" class="mission-link">Conheça o projeto →</a>
+    </div>
+  </div>
+</section>
+
+<!-- OPPORTUNITIES & YOUTH MAP -->
+<section class="section yla-ecosystem" id="ecossistema">
+  <div class="container">
+    <div class="section-header">
+      <div>
+        <div class="section-label">Opportunities &amp; Youth Map</div>
+        <h2 class="section-title">Dois caminhos. Um ecossistema.</h2>
+      </div>
+    </div>
+    <p class="yla-section-lead">Descobrir oportunidades para crescer e conectar iniciativas que já transformam comunidades. A Young Latin American une acesso e visibilidade para jovens de toda a região.</p>
+    <div class="yla-product-grid">
+      <a href="opportunities.html" class="yla-product-card yla-product-orange">
+        <span class="yla-product-icon">✦</span>
+        <span class="yla-product-kicker">01 · Descobrir · Preparar · Conquistar</span>
+        <h3>Opportunities</h3>
+        <p>Bolsas, fellowships, cursos, hackathons, estágios e editais. Descubra programas com inscrições abertas para seu perfil.</p>
+        <span class="yla-product-link">Explorar oportunidades →</span>
+      </a>
+      <a href="youth-map.html" class="yla-product-card yla-product-blue">
+        <span class="yla-product-icon">◎</span>
+        <span class="yla-product-kicker">02 · Descobrir · Conectar · Amplificar</span>
+        <h3>Youth Map</h3>
+        <p>Um mapa de iniciativas lideradas por jovens latino-americanos. Conheça projetos na sua região e publique o seu.</p>
+        <span class="yla-product-link">Conhecer o mapa →</span>
+      </a>
     </div>
   </div>
 </section>
@@ -244,7 +276,7 @@
       <h2 class="section-title">Ações da YLA</h2>
       <a href="acoes.html" class="section-link">Ver tudo →</a>
     </div>
-    <div class="acoes-grid" style="grid-template-columns: repeat(5, 1fr);">
+    <div class="acoes-grid yla-actions-grid">
       <div class="acao-card acao-primary">
         <div class="acao-icon">📰</div>
         <h3 class="acao-title">Revista Científica</h3>
@@ -253,9 +285,15 @@
       </div>
       <div class="acao-card">
         <div class="acao-icon">🔭</div>
-        <h3 class="acao-title">Canal de Oportunidades</h3>
-        <p class="acao-desc">Acesso rápido e flexível a bolsas, olimpíadas, intercâmbios e programas que elevam o perfil de jovens estudantes da América Latina.</p>
-        <a href="acoes.html" class="acao-link">Saiba mais →</a>
+        <h3 class="acao-title">Opportunities</h3>
+        <p class="acao-desc">Bolsas, intercâmbios, programas, cursos, competições e estágios com inscrições abertas em um só lugar.</p>
+        <a href="opportunities.html" class="acao-link">Explorar oportunidades →</a>
+      </div>
+      <div class="acao-card">
+        <div class="acao-icon">🗺️</div>
+        <h3 class="acao-title">Youth Map</h3>
+        <p class="acao-desc">Descubra projetos liderados por estudantes na América Latina e dê visibilidade à sua própria iniciativa.</p>
+        <a href="youth-map.html" class="acao-link">Explorar o mapa →</a>
       </div>
       <div class="acao-card">
         <div class="acao-icon">🧠</div>
@@ -318,6 +356,7 @@
       </div>
       <div class="footer-col">
         <h4 class="footer-col-title">Plataforma</h4>
+        <ul class="yla-footer-extra"><li><a href="opportunities.html">Opportunities</a></li><li><a href="youth-map.html">Youth Map</a></li></ul>
         <ul class="footer-links">
           <li><a href="publicacoes.html">Publicações</a></li>
           <li><a href="enviar.html">Publicar pesquisa</a></li>

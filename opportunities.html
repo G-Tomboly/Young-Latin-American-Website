@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Opportunities — Young Latin American</title>
+  <meta name="description" content="Encontre bolsas, cursos, programas, competições, estágios e oportunidades acadêmicas abertas na América Latina.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300;1,9..40,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="ecossistema.css">
+  
+</head>
+<body>
+<header class="navbar" id="navbar">
+  <div class="nav-container">
+    <a href="index.html" class="logo-official"><img src="1776787439348_image.png" alt="Young Latin American" style="height:38px;width:auto;display:block;border-radius:10px;"></a>
+    <nav class="nav-links" id="navLinks">
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="publicacoes.html" class="nav-link">Publicações</a>
+      <a href="acoes.html" class="nav-link">Ações</a>
+      <a href="opportunities.html" class="nav-link active">Opportunities</a>
+      <a href="youth-map.html" class="nav-link">Youth Map</a>
+      <a href="sobre.html" class="nav-link">Sobre</a>
+      <a href="diretrizes.html" class="nav-link">Diretrizes</a>
+      <a href="faq.html" class="nav-link">FAQ</a>
+      <a href="contato.html" class="nav-link">Contato</a>
+    </nav>
+    <a href="admin.html" class="btn-admin-nav" title="Painel Admin">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      Admin
+    </a>
+    <a href="enviar.html" class="btn-submit">Publicar Pesquisa</a>
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<main>
+<section class="yla-page-hero yla-page-hero-orange">
+  <div class="container yla-hero-inner">
+    <div class="yla-eyebrow">01 / Opportunities · Descobrir • Preparar • Conquistar</div>
+    <h1>Uma oportunidade pode<br><em>mudar sua trajetória.</em></h1>
+    <p>Encontre bolsas, programas, cursos, competições, estágios e oportunidades acadêmicas em um só lugar. Menos barreiras à informação, mais caminhos para crescer.</p>
+    <div class="yla-hero-actions"><a href="#explorar" class="btn-primary">Explorar inscrições abertas ↓</a><a href="youth-map.html" class="yla-hero-link">Descobrir Youth Map →</a></div>
+  </div>
+</section>
+<section class="yla-mini-benefits"><div class="container yla-mini-grid">
+  <span>🎓 Bolsas e intercâmbios</span><span>🧭 Liderança e fellowships</span><span>💻 Cursos e certificações</span><span>🏆 Hackathons e olimpíadas</span><span>🤝 Estágios e voluntariado</span><span>🚀 Editais e financiamento</span>
+</div></section>
+<section class="section yla-directory" id="explorar"><div class="container">
+  <div class="section-label">Oportunidades acadêmicas</div>
+  <h2 class="section-title">Encontre seu próximo passo</h2>
+  <p class="yla-section-lead">Explore oportunidades publicadas pela equipe. Datas e elegibilidade podem mudar: confira sempre os detalhes e o prazo na página oficial antes de se inscrever.</p>
+  <div class="yla-filter-bar">
+    <label class="yla-field yla-search-field"><span>Pesquisar oportunidades</span><input id="opSearch" type="search" placeholder="Nome, organização ou palavra-chave..." autocomplete="off"></label>
+    <label class="yla-field"><span>Categoria</span><select id="opCategory"><option value="">Todas</option><option>Bolsas e intercâmbios</option><option>Liderança e fellowships</option><option>Cursos e certificações</option><option>Hackathons e competições</option><option>Estágios, voluntariado e pesquisa</option><option>Editais e financiamento</option></select></label>
+    <label class="yla-field"><span>País / alcance</span><select id="opCountry"><option value="">Todos os países</option></select></label>
+    <label class="yla-field"><span>Modalidade</span><select id="opMode"><option value="">Todas</option><option value="Online">Online</option><option value="Presencial">Presencial</option><option value="Híbrido">Híbrido</option></select></label>
+  </div>
+  <div class="yla-directory-top"><span id="opCount" aria-live="polite">Carregando oportunidades...</span><label class="yla-check"><input id="opOnlyOpen" type="checkbox" checked> Somente inscrições abertas</label></div>
+  <div class="yla-op-grid" id="opList" aria-live="polite"><div class="yla-empty">Carregando oportunidades...</div></div>
+</div></section>
+<section class="yla-note-section"><div class="container yla-note-inner"><div><div class="section-label">Sua comunidade é parte da solução</div><h2>Conhece uma oportunidade relevante?</h2><p>Ajude a ampliar o acesso. Envie a sugestão e o link oficial para a equipe avaliar a publicação.</p></div><a class="btn-primary" href="contato.html">Sugerir oportunidade →</a></div></section>
+</main>
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="footer-logo"><img src="1776787439348_image.png" alt="Young Latin American" style="height:32px;width:auto;display:block;border-radius:8px;"></div>
+        <p class="footer-tagline">Ciência jovem. Impacto real. América Latina.</p>
+        <div class="footer-social">
+          <a href="#" class="social-link" aria-label="Instagram">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+          </a>
+          <a href="#" class="social-link" aria-label="LinkedIn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2"/><path d="M7 10v7M7 7v.01M12 17v-5c0-1 .5-2 2-2s2 1 2 2v5"/></svg>
+          </a>
+          <a href="#" class="social-link" aria-label="Twitter/X">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          </a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4 class="footer-col-title">Plataforma</h4>
+        <ul class="yla-footer-extra"><li><a href="opportunities.html">Opportunities</a></li><li><a href="youth-map.html">Youth Map</a></li></ul>
+        <ul class="footer-links">
+          <li><a href="publicacoes.html">Publicações</a></li>
+          <li><a href="enviar.html">Publicar pesquisa</a></li>
+          <li><a href="diretrizes.html">Diretrizes</a></li>
+          <li><a href="faq.html">FAQ</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4 class="footer-col-title">Projeto</h4>
+        <ul class="footer-links">
+          <li><a href="sobre.html">Sobre a YLA</a></li>
+          <li><a href="acoes.html">Ações e programas</a></li>
+          <li><a href="contato.html">Contato</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4 class="footer-col-title">Áreas</h4>
+        <ul class="footer-links">
+          <li><a href="publicacoes.html?cat=biologia">Biologia</a></li>
+          <li><a href="publicacoes.html?cat=quimica">Química</a></li>
+          <li><a href="publicacoes.html?cat=fisica">Física</a></li>
+          <li><a href="publicacoes.html?cat=meio-ambiente">Meio Ambiente</a></li>
+          <li><a href="publicacoes.html?cat=tecnologia">Tecnologia</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 Young Latin American. Todos os direitos reservados. - Desenvolvido por: Guilherme Tomboly Borges</p>
+      <p>Feito com 💙 para jovens pesquisadores da América Latina</p>
+    </div>
+  </div>
+</footer>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="supabase.js"></script>
+<script src="main.js"></script>
+<script src="ecossistema.js"></script>
+</body>
+</html>

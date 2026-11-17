@@ -3884,3 +3884,10 @@ ul { list-style: none; }
   display: block;
   transition: opacity .3s ease;
 }
+
+/* Novas áreas do ecossistema: navbar sem quebrar rótulos */
+@media (min-width: 901px) {
+  .nav-container { gap: 13px; }
+  .nav-links { gap: 0; }
+  .nav-link { font-size:12.6px; padding:6px 8px; white-space:nowrap; }
+}

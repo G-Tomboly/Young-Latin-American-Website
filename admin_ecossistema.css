@@ -1,0 +1,34 @@
+/* Extensões do painel editorial: Opportunities & Youth Map */
+.ecos-admin-intro { padding:22px 4px 15px; }
+.ecos-admin-intro h2 { font:800 21px 'Syne',sans-serif; color:#0f172a; margin-bottom:7px; }
+.ecos-admin-intro p { color:#64748b; font-size:13px; line-height:1.7; }
+.ecos-admin-form { background:#fff; border:1px solid #e2e8f0; border-radius:15px; padding:23px; display:flex; flex-direction:column; gap:14px; margin:14px 0 24px; }
+.ecos-admin-form h3 { font:800 17px 'Syne',sans-serif; margin-bottom:3px; }
+.ecos-admin-form label { color:#334155; display:flex; flex-direction:column; gap:7px; font-size:12px; font-weight:700; }
+.ecos-admin-form input,.ecos-admin-form select,.ecos-admin-form textarea,.ecos-admin-card input { width:100%; border:1px solid #cbd5e1; border-radius:8px; background:#fff; padding:10px 12px; font:400 13px 'DM Sans',sans-serif; color:#0f172a; }
+.ecos-admin-form input:focus,.ecos-admin-form select:focus,.ecos-admin-form textarea:focus,.ecos-admin-card input:focus { border-color:#2563eb; outline:2px solid #dbeafe; }
+.ecos-admin-form textarea { resize:vertical; }
+.ecos-admin-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:15px; }
+.ecos-admin-actions { display:flex; gap:10px; flex-wrap:wrap; }
+.ecos-admin-actions button,.ecos-admin-card button { padding:10px 14px; background:#1d4ed8; color:#fff; border:0; border-radius:8px; cursor:pointer; font:700 12px 'DM Sans',sans-serif; }
+.ecos-admin-actions button:nth-child(2) { background:#f1f5f9; color:#334155; }
+.ecos-admin-actions button:disabled,.ecos-admin-card button:disabled { opacity:.5; cursor:wait; }
+.ecos-admin-list { display:flex; flex-direction:column; gap:13px; }
+.ecos-admin-card { border:1px solid #e2e8f0; background:#fff; padding:20px; border-radius:13px; }
+.ecos-admin-head { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; }
+.ecos-admin-card h3 { font:800 16px 'Syne',sans-serif; color:#0f172a; }
+.ecos-admin-card p { font-size:13px; color:#475569; line-height:1.75; margin:9px 0; white-space:pre-wrap; }
+.ecos-admin-meta { font-size:12px; color:#64748b; line-height:1.7; }
+.ecos-admin-badge { background:#eff6ff; color:#1d4ed8; border-radius:99px; padding:5px 9px; font-size:11px; font-weight:700; }
+.ecos-admin-badge.is-draft { background:#f1f5f9; color:#64748b; }
+.ecos-admin-badge.is-pending { background:#fef3c7; color:#92400e; }
+.ecos-admin-buttons { display:flex; flex-wrap:wrap; gap:8px; margin-top:14px; }
+.ecos-admin-card button.is-danger { background:#fee2e2; color:#b91c1c; }
+.ecos-admin-card button.is-success { background:#dcfce7; color:#166534; }
+.ecos-admin-card button.is-secondary { background:#f1f5f9; color:#334155; }
+.ecos-admin-card a { color:#1d4ed8; text-decoration:underline; font-size:12px; }
+.ecos-coords { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; margin-top:14px; max-width:440px; }
+.ecos-coords label { font-size:12px; color:#475569; }
+.ecos-empty { border:1px dashed #cbd5e1; border-radius:10px; padding:32px; text-align:center; color:#64748b; font-size:13px; }
+@media(max-width:950px){.ecos-admin-grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
+@media(max-width:600px){.ecos-admin-grid,.ecos-coords{grid-template-columns:1fr;}}

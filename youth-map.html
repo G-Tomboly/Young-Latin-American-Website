@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Youth Map — Young Latin American</title>
+  <meta name="description" content="Explore no mapa iniciativas lideradas por estudantes latino-americanos e cadastre seu projeto para avaliação.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300;1,9..40,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="ecossistema.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzxP8cUnP6jnfQjWzBM2bU=" crossorigin="">
+</head>
+<body>
+<header class="navbar" id="navbar">
+  <div class="nav-container">
+    <a href="index.html" class="logo-official"><img src="1776787439348_image.png" alt="Young Latin American" style="height:38px;width:auto;display:block;border-radius:10px;"></a>
+    <nav class="nav-links" id="navLinks">
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="publicacoes.html" class="nav-link">Publicações</a>
+      <a href="acoes.html" class="nav-link">Ações</a>
+      <a href="opportunities.html" class="nav-link">Opportunities</a>
+      <a href="youth-map.html" class="nav-link active">Youth Map</a>
+      <a href="sobre.html" class="nav-link">Sobre</a>
+      <a href="diretrizes.html" class="nav-link">Diretrizes</a>
+      <a href="faq.html" class="nav-link">FAQ</a>
+      <a href="contato.html" class="nav-link">Contato</a>
+    </nav>
+    <a href="admin.html" class="btn-admin-nav" title="Painel Admin">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      Admin
+    </a>
+    <a href="enviar.html" class="btn-submit">Publicar Pesquisa</a>
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<main>
+<section class="yla-page-hero yla-page-hero-blue">
+ <div class="container yla-hero-inner"><div class="yla-eyebrow">02 / Youth Map · Descobrir • Conectar • Amplificar</div>
+  <h1>Projetos que transformam.<br><em>Jovens que inspiram.</em></h1>
+  <p>Explore iniciativas de estudantes latino-americanos, descubra o que acontece na sua região e faça sua ideia chegar mais longe.</p>
+  <div class="yla-hero-actions"><a href="#mapa" class="btn-primary">Explorar o mapa ↓</a><a href="#enviar-projeto" class="yla-hero-link">Adicionar meu projeto →</a></div>
+ </div>
+</section>
+<section class="section yla-directory yla-map-section" id="mapa"><div class="container">
+ <div class="section-label">O mapa da juventude latino-americana</div><h2 class="section-title">Descubra iniciativas perto de você</h2>
+ <p class="yla-section-lead">Projetos cadastrados por jovens e revisados pela equipe. Os marcadores representam cidades ou regiões aproximadas, nunca endereços pessoais.</p>
+ <div class="yla-filter-bar yla-map-filters">
+  <label class="yla-field yla-search-field"><span>Buscar projetos</span><input type="search" id="mapSearch" placeholder="Projeto, tema ou cidade..."></label>
+  <label class="yla-field"><span>País</span><select id="mapCountry"><option value="">Todos os países</option></select></label>
+  <label class="yla-field"><span>Área</span><select id="mapArea"><option value="">Todas as áreas</option></select></label>
+  <button type="button" class="yla-locate-btn" id="locateBtn">◎ Projetos perto de mim</button>
+ </div>
+ <div class="yla-map-layout">
+   <div class="yla-map-panel"><div id="ylaProjectMap" role="region" aria-label="Mapa de projetos de jovens latino-americanos"></div><div class="yla-map-credit">Mapa © OpenStreetMap · Localização aproximada por cidade ou país</div></div>
+   <aside class="yla-map-results"><div class="yla-results-head"><h3>Projetos da comunidade</h3><span id="mapCount">Carregando...</span></div><div id="mapResults" class="yla-project-results" aria-live="polite"><div class="yla-empty">Buscando projetos...</div></div></aside>
+ </div>
+ <p class="yla-map-help" id="mapHelp" aria-live="polite">Para encontrar iniciativas na sua região, filtre pelo país ou escolha “Projetos perto de mim”. Compartilhar sua localização é opcional e ela não será salva.</p>
+</div></section>
+<section class="yla-submit-section" id="enviar-projeto"><div class="container yla-submit-layout">
+ <div class="yla-submit-aside"><div class="section-label">Coloque sua ideia no mapa</div><h2>Seu projeto também merece ser visto.</h2><p>Cada iniciativa, pequena ou grande, pode inspirar outros jovens. Compartilhe as informações essenciais e nossa equipe fará a revisão antes de publicar.</p>
+ <div class="yla-steps"><div><b>01</b><span>Preencha o formulário gratuito</span></div><div><b>02</b><span>A equipe revisa as informações</span></div><div><b>03</b><span>O projeto aprovado aparece no mapa</span></div></div>
+ </div>
+ <form id="projectForm" class="yla-form-card">
+  <h3>Cadastrar um projeto</h3><p class="yla-form-intro">Use somente informações que podem ser divulgadas publicamente. Não informe endereço residencial, escola específica ou dados de contato privados.</p>
+  <div class="yla-form-row"><label class="yla-field"><span>Nome do projeto *</span><input name="titulo" required maxlength="130" placeholder="Ex.: Jovens pelo Rio"></label><label class="yla-field"><span>Área de atuação *</span><select name="area" required><option value="">Selecione</option><option>Educação</option><option>Meio ambiente</option><option>Ciência e tecnologia</option><option>Saúde e bem-estar</option><option>Cultura e arte</option><option>Inclusão e direitos</option><option>Empreendedorismo</option><option>Outra</option></select></label></div>
+  <label class="yla-field"><span>Sobre a iniciativa *</span><textarea name="descricao" rows="5" maxlength="1200" minlength="40" required placeholder="O que seu projeto faz, quem beneficia e qual o impacto esperado?"></textarea></label>
+  <div class="yla-form-row"><label class="yla-field"><span>Cidade ou região (aproximada) *</span><input name="cidade" required maxlength="90" placeholder="Ex.: Salvador"></label><label class="yla-field"><span>País *</span><select name="pais" required><option value="">Selecione</option><option>Argentina</option><option>Bolívia</option><option>Brasil</option><option>Chile</option><option>Colômbia</option><option>Costa Rica</option><option>Cuba</option><option>Equador</option><option>El Salvador</option><option>Guatemala</option><option>Honduras</option><option>México</option><option>Nicarágua</option><option>Panamá</option><option>Paraguai</option><option>Peru</option><option>República Dominicana</option><option>Uruguai</option><option>Venezuela</option><option>Outro país da América Latina</option></select></label></div>
+  <label class="yla-field"><span>Equipe ou organização (opcional)</span><input name="equipe" maxlength="120" placeholder="Nome público da equipe, sem dados pessoais"></label>
+  <label class="yla-field"><span>Site ou perfil público do projeto (opcional)</span><input name="link_url" type="url" maxlength="500" placeholder="https://... (não use perfil pessoal)"></label>
+  <label class="yla-consent"><input type="checkbox" name="autorizacao" required> <span>Declaro que tenho autorização para divulgar as informações fornecidas e compreendo que, se aprovado, o conteúdo será público. Não incluí dados pessoais de terceiros.</span></label>
+  <button type="submit" id="projectSubmit" class="btn-primary yla-form-submit">Enviar projeto para análise →</button>
+  <div id="projectFeedback" class="yla-feedback" role="status" aria-live="polite"></div>
+ </form>
+</div></section>
+</main>
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="footer-logo"><img src="1776787439348_image.png" alt="Young Latin American" style="height:32px;width:auto;display:block;border-radius:8px;"></div>
+        <p class="footer-tagline">Ciência jovem. Impacto real. América Latina.</p>
+        <div class="footer-social">
+          <a href="#" class="social-link" aria-label="Instagram">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+          </a>
+          <a href="#" class="social-link" aria-label="LinkedIn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2"/><path d="M7 10v7M7 7v.01M12 17v-5c0-1 .5-2 2-2s2 1 2 2v5"/></svg>
+          </a>
+          <a href="#" class="social-link" aria-label="Twitter/X">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          </a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4 class="footer-col-title">Plataforma</h4>
+        <ul class="yla-footer-extra"><li><a href="opportunities.html">Opportunities</a></li><li><a href="youth-map.html">Youth Map</a></li></ul>
+        <ul class="footer-links">
+          <li><a href="publicacoes.html">Publicações</a></li>
+          <li><a href="enviar.html">Publicar pesquisa</a></li>
+          <li><a href="diretrizes.html">Diretrizes</a></li>
+          <li><a href="faq.html">FAQ</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4 class="footer-col-title">Projeto</h4>
+        <ul class="footer-links">
+          <li><a href="sobre.html">Sobre a YLA</a></li>
+          <li><a href="acoes.html">Ações e programas</a></li>
+          <li><a href="contato.html">Contato</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4 class="footer-col-title">Áreas</h4>
+        <ul class="footer-links">
+          <li><a href="publicacoes.html?cat=biologia">Biologia</a></li>
+          <li><a href="publicacoes.html?cat=quimica">Química</a></li>
+          <li><a href="publicacoes.html?cat=fisica">Física</a></li>
+          <li><a href="publicacoes.html?cat=meio-ambiente">Meio Ambiente</a></li>
+          <li><a href="publicacoes.html?cat=tecnologia">Tecnologia</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 Young Latin American. Todos os direitos reservados. - Desenvolvido por: Guilherme Tomboly Borges</p>
+      <p>Feito com 💙 para jovens pesquisadores da América Latina</p>
+    </div>
+  </div>
+</footer>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="supabase.js"></script>
+<script src="main.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script src="ecossistema.js"></script>
+</body>
+</html>

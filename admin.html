@@ -328,6 +328,7 @@
       .admin-sub-card-header { flex-wrap: wrap; }
     }
   </style>
+<link rel="stylesheet" href="admin_ecossistema.css">
 </head>
 <body class="admin-page">
 
@@ -432,6 +433,8 @@
       <button class="admin-tab-btn" data-tab="mensagens">
         💬 Mensagens <span class="count-badge admin-badge-new" id="tabCountMensagens">0</span>
       </button>
+      <button class="admin-tab-btn" data-tab="oportunidades">🎓 Opportunities <span class="count-badge" id="tabCountOportunidades">0</span></button>
+      <button class="admin-tab-btn" data-tab="projetos">🗺️ Youth Map <span class="count-badge" id="tabCountProjetos">0</span></button>
     </div>
 
     <!-- Aba pesquisas -->
@@ -458,6 +461,34 @@
           <div class="admin-empty-title">Carregando mensagens...</div>
         </div>
       </div>
+    </div>
+
+    <!-- Aba Opportunities -->
+    <div class="admin-tab-content hidden" id="tabOportunidades">
+      <div class="ecos-admin-intro"><h2>Gerenciar oportunidades</h2><p>Cadastre apenas oportunidades confirmadas. Inclua sempre o link oficial da inscrição e confira as datas.</p></div>
+      <form id="opAdminForm" class="ecos-admin-form">
+        <h3 id="opFormTitle">Nova oportunidade</h3><input type="hidden" id="opEditId">
+        <div class="ecos-admin-grid">
+          <label>Título *<input id="opTitle" required maxlength="160" minlength="4" placeholder="Nome do programa"></label>
+          <label>Organização *<input id="opOrg" required maxlength="120" placeholder="Instituição organizadora"></label>
+          <label>Categoria *<select id="opCatAdmin" required><option>Bolsas e intercâmbios</option><option>Liderança e fellowships</option><option>Cursos e certificações</option><option>Hackathons e competições</option><option>Estágios, voluntariado e pesquisa</option><option>Editais e financiamento</option></select></label>
+          <label>País ou alcance *<input id="opPaisAdmin" required maxlength="90" value="América Latina" placeholder="Brasil, Argentina, Global..."></label>
+          <label>Modalidade *<select id="opModeAdmin"><option>Online</option><option>Presencial</option><option>Híbrido</option></select></label>
+          <label>Data limite (vazio = contínua)<input type="date" id="opDeadline"></label>
+        </div>
+        <label>Descrição (mínimo 30 caracteres) *<textarea id="opDescAdmin" required minlength="30" maxlength="1200" rows="3"></textarea></label>
+        <label>URL oficial da inscrição *<input id="opURL" type="url" required maxlength="500" placeholder="https://..."></label>
+        <label>Status <select id="opStatusAdmin"><option value="rascunho">Rascunho (não aparece no site)</option><option value="publicado">Publicado</option></select></label>
+        <div class="ecos-admin-actions"><button type="submit" id="opSaveBtn">Salvar oportunidade</button><button type="button" id="opCancelEdit">Cancelar edição</button></div>
+        <p id="opAdminMessage" role="status"></p>
+      </form>
+      <div id="opAdminList" class="ecos-admin-list">Carregando...</div>
+    </div>
+
+    <!-- Aba Youth Map -->
+    <div class="admin-tab-content hidden" id="tabProjetos">
+      <div class="ecos-admin-intro"><h2>Moderar projetos do Youth Map</h2><p>Revise descrições e links antes de aprovar. Não publique informações pessoais de menores. Se necessário, informe a localização aproximada da cidade, nunca um endereço exato.</p></div>
+      <div id="projectAdminList" class="ecos-admin-list">Carregando...</div>
     </div>
 
   </div>
@@ -1010,6 +1041,7 @@ function showPanel(user) {
   loadSubmissions();
   loadMessages();
   subscribeRealtimeMessages();
+  if (window.initEcosistemaAdmin) window.initEcosistemaAdmin();
 }
 
 function showGuard() {
@@ -1060,5 +1092,6 @@ document.getElementById('adminLogoutBtn').addEventListener('click', adminLogout)
 // Inicia
 initAdmin();
 </script>
+<script src="admin_ecossistema.js"></script>
 </body>
 </html>
